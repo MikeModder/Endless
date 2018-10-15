@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.MissingResourceException;
 
 /**
  * @author Artuto
@@ -72,10 +73,22 @@ public class EndlessCommandEvent extends CommandEvent
         if(event.isFromType(ChannelType.TEXT))
         {
             GuildSettings gs = getClient().getSettingsFor(getGuild());
-            s = MessageFormat.format(gs.getLocale().getBundle().getString(s), args);
+            try {s = MessageFormat.format(gs.getLocale().getBundle().getString(s), args);}
+            catch(MissingResourceException ignored)
+            {
+                event.reply(s);
+                return;
+            }
         }
         else
-            s = MessageFormat.format(Locale.EN_US.getBundle().getString(s), args);
+        {
+            try {s = MessageFormat.format(Locale.EN_US.getBundle().getString(s), args);}
+            catch(MissingResourceException ignored)
+            {
+                event.reply(s);
+                return;
+            }
+        }
 
         event.reply(s);
     }
@@ -101,10 +114,22 @@ public class EndlessCommandEvent extends CommandEvent
         if(event.isFromType(ChannelType.TEXT))
         {
             GuildSettings gs = getClient().getSettingsFor(getGuild());
-            s = MessageFormat.format(gs.getLocale().getBundle().getString(s), args);
+            try {s = MessageFormat.format(gs.getLocale().getBundle().getString(s), args);}
+            catch(MissingResourceException ignored)
+            {
+                event.reply(Const.INFO+" "+s);
+                return;
+            }
         }
         else
-            s = MessageFormat.format(Locale.EN_US.getBundle().getString(s), args);
+        {
+            try {s = MessageFormat.format(Locale.EN_US.getBundle().getString(s), args);}
+            catch(MissingResourceException ignored)
+            {
+                event.reply(Const.INFO+" "+s);
+                return;
+            }
+        }
 
         event.reply(Const.INFO+" "+s);
     }
@@ -131,10 +156,22 @@ public class EndlessCommandEvent extends CommandEvent
         if(event.isFromType(ChannelType.TEXT))
         {
             GuildSettings gs = getClient().getSettingsFor(getGuild());
-            s = MessageFormat.format(gs.getLocale().getBundle().getString(s), args);
+            try {s = MessageFormat.format(gs.getLocale().getBundle().getString(s), args);}
+            catch(MissingResourceException ignored)
+            {
+                event.replyError(s);
+                return;
+            }
         }
         else
-            s = MessageFormat.format(Locale.EN_US.getBundle().getString(s), args);
+        {
+            try {s = MessageFormat.format(Locale.EN_US.getBundle().getString(s), args);}
+            catch(MissingResourceException ignored)
+            {
+                event.replyError(s);
+                return;
+            }
+        }
 
         event.replyError(s);
     }
@@ -161,10 +198,22 @@ public class EndlessCommandEvent extends CommandEvent
         if(event.isFromType(ChannelType.TEXT))
         {
             GuildSettings gs = getClient().getSettingsFor(getGuild());
-            s = MessageFormat.format(gs.getLocale().getBundle().getString(s), args);
+            try {s = MessageFormat.format(gs.getLocale().getBundle().getString(s), args);}
+            catch(MissingResourceException ignored)
+            {
+                event.replySuccess(s);
+                return;
+            }
         }
         else
-            s = MessageFormat.format(Locale.EN_US.getBundle().getString(s), args);
+        {
+            try {s = MessageFormat.format(Locale.EN_US.getBundle().getString(s), args);}
+            catch(MissingResourceException ignored)
+            {
+                event.replySuccess(s);
+                return;
+            }
+        }
 
         event.replySuccess(s);
     }
@@ -191,11 +240,22 @@ public class EndlessCommandEvent extends CommandEvent
         if(event.isFromType(ChannelType.TEXT))
         {
             GuildSettings gs = getClient().getSettingsFor(getGuild());
-            s = MessageFormat.format(gs.getLocale().getBundle().getString(s), args);
+            try {s = MessageFormat.format(gs.getLocale().getBundle().getString(s), args);}
+            catch(MissingResourceException ignored)
+            {
+                event.replyWarning(s);
+                return;
+            }
         }
         else
-            s = MessageFormat.format(Locale.EN_US.getBundle().getString(s), args);
-
+        {
+            try {s = MessageFormat.format(Locale.EN_US.getBundle().getString(s), args);}
+            catch(MissingResourceException ignored)
+            {
+                event.replyWarning(s);
+                return;
+            }
+        }
         event.replyWarning(s);
     }
 
