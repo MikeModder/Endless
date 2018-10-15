@@ -53,8 +53,8 @@ public class ShutdownCmd extends EndlessCommand
         {
             event.reactSuccess();
             event.getClient().shutdown();
-            bot.db.shutdown();
             shardManager.shutdown();
+            bot.db.shutdown();
         }
         else
         {
