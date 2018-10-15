@@ -157,7 +157,7 @@ public class PollCmd extends EndlessCommand
             }
 
             // parse time
-            int t = ArgsUtils.parseTime(rawTime==null?"60s":rawTime);
+            long t = ArgsUtils.parseTime(rawTime==null?"60s":rawTime);
             this.time = OffsetDateTime.now().plusSeconds(t==0?60:t);
         }
     }

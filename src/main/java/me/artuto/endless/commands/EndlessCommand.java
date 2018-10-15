@@ -49,8 +49,9 @@ public abstract class EndlessCommand extends Command
     }
 
     @Override
-    public void execute(CommandEvent event)
+    public void execute(CommandEvent cevent)
     {
+        EndlessCommandEvent event = new EndlessCommandEvent(cevent);
         boolean hasPerms = false;
         CommandClient client = event.getClient();
         Guild guild = event.getGuild();
@@ -61,7 +62,6 @@ public abstract class EndlessCommand extends Command
 
         if(!(Categories.doCheck(event)))
             return;
-
         if(ownerCommand && !(event.isOwner()))
         {
             Endless.LOG.warn(author.getName()+"#"+author.getDiscriminator()+" ("+author.getId()+") tried to run a owner-only command!");
@@ -75,10 +75,9 @@ public abstract class EndlessCommand extends Command
                 if(!(ChecksUtil.hasPermission(selfMember, tc, p)))
                 {
                     event.getClient().applyCooldown(getCooldownKey(event), 0);
-                    event.replyError(String.format("I need the %s permission in this Guild to execute this command!", p.getName()));
+                    event.replyError("command.permission.bot", p.getName());
                     return;
                 }
-                break;
             }
 
             if(event.isOwner())
@@ -102,10 +101,9 @@ public abstract class EndlessCommand extends Command
                     if(!(ChecksUtil.hasPermission(member, tc, p)))
                     {
                         event.getClient().applyCooldown(getCooldownKey(event), 0);
-                        event.replyError(String.format("You need the %s permission in this Guild to execute this command!", p.getName()));
+                        event.replyError("command.permission.executor", p.getName());
                         return;
                     }
-                    break;
                 }
             }
         }
@@ -114,14 +112,13 @@ public abstract class EndlessCommand extends Command
         {
             event.getClient().applyCooldown(getCooldownKey(event), 0);
             if(needsArgumentsMessage==null)
-                event.replyError("**Too few arguments provided!**\n" +
-                        "Try running `"+client.getPrefix()+(parent==null?"":parent.getName()+" ")+this.name+" help` to get help.");
+                event.replyError("command.noArgs", client.getPrefix(), (parent==null?"":parent.getName()+" "), this.name);
             else
-                event.replyWarning(needsArgumentsMessage);
+                event.replyWarning(false, needsArgumentsMessage);
             return;
         }
 
-        executeCommand(new EndlessCommandEvent(event));
+        executeCommand(event);
     }
 
     protected abstract void executeCommand(EndlessCommandEvent event);
