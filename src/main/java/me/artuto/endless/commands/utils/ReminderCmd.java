@@ -28,7 +28,6 @@ import me.artuto.endless.utils.FormatUtil;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -58,7 +57,7 @@ public class ReminderCmd extends EndlessCommand
     {
         if(!(bot.dataEnabled))
         {
-            event.replyError("Endless is running on No-data mode.");
+            event.replyError("core.data.disabled");
             return;
         }
 
@@ -66,20 +65,21 @@ public class ReminderCmd extends EndlessCommand
         List<Reminder> reminders = bot.rdm.getRemindersByUser(author.getIdLong());
         if(reminders.isEmpty())
         {
-            event.replyWarning("You don't have any reminder currently active!");
+            event.replyWarning("command.reminder.empty", event.getClient().getPrefix());
             return;
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("**").append(reminders.size()).append("** reminders:");
+        sb.append(event.localize("command.reminder.list", reminders.size())).append(":");
         for(Reminder r : reminders)
         {
             TextChannel tc = event.getJDA().asBot().getShardManager().getTextChannelById(r.getChannelId());
-            sb.append("\n`").append(reminders.indexOf(r)).append(".` ").append(tc==null?"Direct Message":tc.getAsMention());
-            sb.append(" - \"").append(r.getMessage().length()>20?r.getMessage().substring(0, 20)+"...":r.getMessage()).append("\" in ")
-                    .append(FormatUtil.formatTimeFromSeconds(OffsetDateTime.now().until(r.getExpiryTime(), ChronoUnit.SECONDS)));
+            sb.append("\n`").append(reminders.indexOf(r)).append(".` ").append(tc==null?event.localize("misc.dm"):tc.getAsMention());
+            sb.append(" - \"").append(r.getMessage().length()>20?r.getMessage().substring(0, 20)+"...":r.getMessage()).append("\" ")
+                    .append(event.localize("misc.in")).append(" ").append(FormatUtil.formatTimeFromSeconds(OffsetDateTime.now()
+                    .until(r.getExpiryTime(), ChronoUnit.SECONDS)));
         }
-        event.replySuccess(sb.toString());
+        event.replySuccess(false, sb.toString());
     }
 
     private class CreateCmd extends EndlessCommand
@@ -100,7 +100,7 @@ public class ReminderCmd extends EndlessCommand
         {
             if(!(bot.dataEnabled))
             {
-                event.replyError("Endless is running on No-data mode.");
+                event.replyError("core.data.disabled");
                 return;
             }
 
@@ -108,31 +108,33 @@ public class ReminderCmd extends EndlessCommand
             List<Reminder> reminders = bot.rdm.getRemindersByUser(author.getIdLong());
             if(reminders.size()>100)
             {
-                event.replyError("You can't have more than 100 active reminders!");
+                event.replyError("command.reminder.create.limit");
                 return;
             }
-            String[] args = splitArgs(event.getArgs());
-            if(args[0].equals("0") || args[0].equals("-1"))
-            {
-                event.replyError("You didn't provide a valid time!");
-                return;
-            }
-            if(args[1].isEmpty())
-            {
-                event.replyError("You didn't provide a message!");
-                return;
-            }
-            int time = Integer.valueOf(args[0]);
-            Instant expiryTime = Instant.now().plus(time, ChronoUnit.SECONDS);
-            if(time<0)
-            {
-                event.replyError("The time cannot be negative!");
-                return;
-            }
-            String formattedTime = FormatUtil.formatTimeFromSeconds(time);
 
-            bot.rdm.createReminder(event.getChannel().getIdLong(), expiryTime.toEpochMilli(), event.getAuthor().getIdLong(), args[1]);
-            event.replySuccess("Set reminder to expire in "+formattedTime);
+            String[] args = ArgsUtils.split(2, event.getArgs());
+            long time = ArgsUtils.parseTime(args[0]);
+            String message = args[1];
+            if(time==0)
+            {
+                event.replyError("command.reminder.create.invalidTime");
+                return;
+            }
+            if(time<60)
+            {
+                event.replyError("command.reminder.create.tooShort"); // like apfel's dick
+                return;
+            }
+            if(message.isEmpty())
+            {
+                event.replyError("command.reminder.create.noMessage");
+                return;
+            }
+
+            OffsetDateTime expiry = OffsetDateTime.now().plusSeconds(time);
+            String formattedTime = FormatUtil.formatTimeFromSeconds(time);
+            bot.rdm.createReminder(event.getChannel().getIdLong(), expiry.toInstant().toEpochMilli(), event.getAuthor().getIdLong(), message);
+            event.replySuccess("command.reminder.create.created", formattedTime);
         }
     }
 
@@ -153,7 +155,7 @@ public class ReminderCmd extends EndlessCommand
         {
             if(!(bot.dataEnabled))
             {
-                event.replyError("Endless is running on No-data mode.");
+                event.replyError("core.data.disabled");
                 return;
             }
 
@@ -161,43 +163,27 @@ public class ReminderCmd extends EndlessCommand
             List<Reminder> reminders = bot.rdm.getRemindersByUser(author.getIdLong());
             if(reminders.isEmpty())
             {
-                event.replyWarning("You don't have any reminder currently active!");
+                event.replyWarning("command.reminder.delete.empty");
                 return;
             }
 
             long id;
-            try
-            {
-                id = Long.parseLong(event.getArgs());
-            }
+            try {id = Long.parseLong(event.getArgs());}
             catch(NumberFormatException e)
             {
-                event.replyError("The reminder ID should be a number between 0 and 100!");
+                event.replyError("command.reminder.delete.invalidId");
                 return;
             }
 
             if(reminders.size()>id+1 || reminders.size()<id+1)
             {
-                event.replyError("A reminder with that ID couldn't be found!");
+                event.replyError("command.reminder.delete.notFound");
                 return;
             }
 
             Reminder reminder = reminders.get((int)id);
             bot.rdm.deleteReminder(reminder.getId(), author.getIdLong());
-            event.replySuccess("Successfully removed reminder with ID "+id);
-        }
-    }
-
-    private String[] splitArgs(String preArgs)
-    {
-        try
-        {
-            String[] args = preArgs.split("\\s", 2);
-            return new String[]{String.valueOf(ArgsUtils.parseTime(args[0])), args[1]};
-        }
-        catch(ArrayIndexOutOfBoundsException e)
-        {
-            return new String[]{preArgs, ""};
+            event.replySuccess("command.reminder.delete.deleted", id);
         }
     }
 }

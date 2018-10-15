@@ -17,15 +17,12 @@
 
 package me.artuto.endless.commands.utils;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import me.artuto.endless.Bot;
 import me.artuto.endless.commands.EndlessCommand;
 import me.artuto.endless.commands.EndlessCommandEvent;
 import me.artuto.endless.commands.cmddata.Categories;
 import me.artuto.endless.core.entities.Profile;
-import me.artuto.endless.utils.FormatUtil;
-import net.dv8tion.jda.core.entities.Member;
+import me.artuto.endless.utils.ArgsUtils;
 import net.dv8tion.jda.core.entities.User;
 
 import java.io.IOException;
@@ -34,7 +31,6 @@ import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class TimeForCmd extends EndlessCommand
 {
@@ -45,7 +41,7 @@ public class TimeForCmd extends EndlessCommand
         this.bot = bot;
         this.name = "timefor";
         this.aliases = new String[]{"tf"};
-        this.children = new Command[]{new ChangeCmd(), new ListCmd()};
+        this.children = new EndlessCommand[]{new ChangeCmd(), new ListCmd()};
         this.help = "Shows the timezone for the specified user";
         this.arguments = "<user>";
         this.category = Categories.UTILS;
@@ -57,7 +53,7 @@ public class TimeForCmd extends EndlessCommand
     {
         if(!(bot.dataEnabled))
         {
-            event.replyError("Endless is running on No-data mode.");
+            event.replyError("core.data.disabled");
             return;
         }
 
@@ -73,19 +69,16 @@ public class TimeForCmd extends EndlessCommand
         {
             user = event.getAuthor();
             p = bot.prdm.getProfile(user);
-            name = "**"+user.getName()+"#"+user.getDiscriminator()+"**";
+            name = user.getName()+"#"+user.getDiscriminator();
 
             if(p.getTimezone()==null)
-                event.replyWarning("You don't have a timezone configured!");
+                event.replyWarning("command.timefor.notConfigured.executor");
             else
             {
-                try
+                try {zone = ZoneId.of(p.getTimezone());}
+                catch(DateTimeException ignored)
                 {
-                    zone = ZoneId.of(p.getTimezone());
-                }
-                catch(DateTimeException e)
-                {
-                    event.replyError("`"+p.getTimezone()+"` isn't a valid timezone!");
+                    event.replyError("command.timefor.invalid", p.getTimezone());
                     return;
                 }
 
@@ -93,39 +86,26 @@ public class TimeForCmd extends EndlessCommand
                 time = t.format(DateTimeFormatter.ofPattern("h:mma"));
                 time24 = t.format(DateTimeFormatter.ofPattern("HH:mm"));
 
-                event.reply(":clock1: The time for "+name+" is `"+time+"` (`"+time24+"`)");
+                event.reply(false, ":clock1: "+event.localize("command.timefor", name, time, time24));
             }
         }
         else
         {
-            List<Member> list = FinderUtil.findMembers(event.getArgs(), event.getGuild());
-
-            if(list.isEmpty())
-            {
-                event.replyWarning("I was not able to found a user with the provided arguments: '"+event.getArgs()+"'");
+            user = ArgsUtils.findUser(false, event, event.getArgs());
+            if(user==null)
                 return;
-            }
-            else if(list.size()>1)
-            {
-                event.replyWarning(FormatUtil.listOfMembers(list, event.getArgs()));
-                return;
-            }
-            else user = list.get(0).getUser();
 
             p = bot.prdm.getProfile(user);
-            name = "**"+user.getName()+"#"+user.getDiscriminator()+"**";
+            name = user.getName()+"#"+user.getDiscriminator();
 
             if(!(bot.prdm.hasProfile(user)))
-                event.replyError(name+" doesn't has a timezone configured!");
+                event.replyError("command.timefor.notConfigured.other", name);
             else
             {
-                try
+                try {zone = ZoneId.of(p.getTimezone());}
+                catch(DateTimeException ignored)
                 {
-                    zone = ZoneId.of(p.getTimezone());
-                }
-                catch(DateTimeException e)
-                {
-                    event.replyError("`"+p.getTimezone()+"` isn't a valid timezone!");
+                    event.replyError("command.timefor.invalid", p.getTimezone());
                     return;
                 }
 
@@ -133,7 +113,7 @@ public class TimeForCmd extends EndlessCommand
                 time = t.format(DateTimeFormatter.ofPattern("h:mma"));
                 time24 = t.format(DateTimeFormatter.ofPattern("HH.mm"));
 
-                event.reply(":clock1: The time for "+name+" is `"+time+"` (`"+time24+"`)");
+                event.reply(false, ":clock1: "+event.localize("command.timefor", name, time, time24));
             }
         }
     }
@@ -156,30 +136,20 @@ public class TimeForCmd extends EndlessCommand
         {
             if(!(bot.dataEnabled))
             {
-                event.replyError("Endless is running on No-data mode.");
+                event.replyError("core.data.disabled");
                 return;
             }
 
             String args = event.getArgs();
-
-            if(args.isEmpty())
+            try {ZoneId.of(args);}
+            catch(DateTimeException ignored)
             {
-                event.replyWarning("Please specify a timezone!");
-                return;
-            }
-
-            try
-            {
-                ZoneId.of(args);
-            }
-            catch(DateTimeException e)
-            {
-                event.replyError("Please specify a valid timezone!");
+                event.replyError("command.timefor.change.invalid", event.getClient().getPrefix());
                 return;
             }
 
             bot.prdm.setTimezone(event.getAuthor(), args);
-            event.replySuccess("Successfully updated timezone!");
+            event.replySuccess("command.timefor.change.changed");
         }
     }
 
@@ -198,15 +168,9 @@ public class TimeForCmd extends EndlessCommand
         @Override
         protected void executeCommand(EndlessCommandEvent event)
         {
-            event.replySuccess("Here is the list: ");
-            try
-            {
-                event.getChannel().sendFile(new URL("https://endless.artuto.me/files/Timezones.txt").openStream(), "Timezones.txt", null).queue();
-            }
-            catch(IOException e)
-            {
-                event.replyError("Error when uploading the list, please visit **https://endless.artuto.me/files/Timezones.txt** to see the list.");
-            }
+            String url = "https://github.com/EndlessBot/Endless/blob/master/src/main/resources/timezones.txt";
+            try {event.getChannel().sendFile(new URL(url).openStream(), "Timezones.txt", null).queue();}
+            catch(IOException ignored) {event.replyError("command.timefor.list.error", url);}
         }
     }
 }

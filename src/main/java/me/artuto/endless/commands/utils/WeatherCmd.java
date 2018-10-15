@@ -22,6 +22,7 @@ import me.artuto.endless.Const;
 import me.artuto.endless.commands.EndlessCommand;
 import me.artuto.endless.commands.EndlessCommandEvent;
 import me.artuto.endless.commands.cmddata.Categories;
+import me.artuto.endless.utils.FormatUtil;
 import me.artuto.endless.utils.IOUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -61,12 +62,12 @@ public class WeatherCmd extends EndlessCommand
     {
         if(bot.config.getBingMapsKey().isEmpty())
         {
-            event.replyError("Bing Maps API Key is not configured!");
+            event.replyError(false, "Bing Maps API Key is not configured!");
             return;
         }
-        else if(bot.config.getDarkSkyKey().isEmpty())
+        if(bot.config.getDarkSkyKey().isEmpty())
         {
-            event.replyError("DarkSky API Key is not configured!");
+            event.replyError(false, "DarkSky API Key is not configured!");
             return;
         }
 
@@ -75,13 +76,13 @@ public class WeatherCmd extends EndlessCommand
             JSONObject mapsObj = IOUtils.makeGETRequest(null, url);
             if(mapsObj==null)
             {
-                event.replyError("Could not contact Bing Maps API to get the specified location!");
+                event.replyError("command.weather.error.bing");
                 return;
             }
             JSONObject resSet = (JSONObject)mapsObj.getJSONArray("resourceSets").get(0);
             if(resSet.getJSONArray("resources").length()==0)
             {
-                event.replyWarning("The specified location could not be found!");
+                event.replyWarning("command.weather.error.notFound");
                 return;
             }
             JSONObject res = (JSONObject)resSet.getJSONArray("resources").get(0);
@@ -95,13 +96,10 @@ public class WeatherCmd extends EndlessCommand
                     .units(ForecastRequestBuilder.Units.si).build();
 
             JSONObject forecast;
-            try
-            {
-                forecast = new JSONObject(darkskyClient.forecastJsonString(request)).getJSONObject("currently");
-            }
+            try {forecast = new JSONObject(darkskyClient.forecastJsonString(request)).getJSONObject("currently");}
             catch(ForecastException e)
             {
-                event.replyError("Could not contact DarkSky API to get the weather of the specified location!");
+                event.replyError("command.weather.error.darksky");
                 return;
             }
 
@@ -109,25 +107,33 @@ public class WeatherCmd extends EndlessCommand
             MessageBuilder mb = new MessageBuilder();
             StringBuilder sb = new StringBuilder();
 
-            mb.setContent(":sunny: Weather for **"+names.getString("formattedAddress")+"** ("+names.getString("adminDistrict")+", "
-                    +names.getString("countryRegion")+")");
+            mb.setContent(FormatUtil.sanitize(":sunny: "+event.localize("command.weather.title", names.getString("formattedAddress"),
+                    names.getString("adminDistrict"), names.getString("countryRegion"))));
 
-            double celsius = forecast.getDouble("temperature");
-            double flCelsius = forecast.getDouble("apparentTemperature");
-            double farenheit = 32 + (celsius*9/5);
-            double flFarenheit = 32 + (flCelsius*9/5);
-            sb.append(Const.LINE_START).append(" Weather: **").append(forecast.getString("summary")).append("**\n");
-            sb.append(Const.LINE_START).append(" Temperature: **").append(celsius).append("**°C (**").append(farenheit).append("**°F)\n");
-            sb.append(Const.LINE_START).append(" Feels like:tm:: **").append(flCelsius).append("**°C (**").append(flFarenheit).append("**°F)\n");
-            sb.append(Const.LINE_START).append(" Humidity: **").append(Math.round(forecast.getDouble("humidity")*100)).append("**%\n");
-            sb.append(Const.LINE_START).append(" Wind Speed: **").append(forecast.getDouble("windSpeed")).append("**kph\n");
-            sb.append(Const.LINE_START).append(" UV Index: **").append(forecast.getInt("uvIndex")).append("**\n");
-            sb.append(Const.LINE_START).append(" Nebulosity: **").append(Math.round(forecast.getDouble("cloudCover")*100)).append("**%\n");
-            sb.append(Const.LINE_START).append(" Visibility: **").append(Math.round(forecast.getDouble("visibility"))).append("**%\n");
+            double celsius = Math.floor(forecast.getDouble("temperature"));
+            double flCelsius = Math.floor(forecast.getDouble("apparentTemperature"));
+            double farenheit = Math.floor(32 + (celsius*9/5));
+            double flFarenheit = Math.floor(32 + (flCelsius*9/5));
+            sb.append(Const.LINE_START).append(" ").append(event.localize("command.weather.weather")).append(": **")
+                    .append(forecast.getString("summary")).append("**\n");
+            sb.append(Const.LINE_START).append(" ").append(event.localize("command.weather.temperature")).append(": **")
+                    .append(celsius).append("**°C (**").append(farenheit).append("**°F)\n");
+            sb.append(Const.LINE_START).append(" ").append(event.localize("command.weather.feelsLike")).append(":tm:: **")
+                    .append(flCelsius).append("**°C (**").append(flFarenheit).append("**°F)\n");
+            sb.append(Const.LINE_START).append(" ").append(event.localize("command.weather.humidity")).append(": **")
+                    .append(Math.floor(forecast.getDouble("humidity")*100)).append("**%\n");
+            sb.append(Const.LINE_START).append(" ").append(event.localize("command.weather.windSpeed")).append(": **")
+                    .append(forecast.getDouble("windSpeed")).append("**kph\n");
+            sb.append(Const.LINE_START).append(" ").append(event.localize("command.weather.uvI")).append(": **")
+                    .append(forecast.getInt("uvIndex")).append("**\n");
+            sb.append(Const.LINE_START).append(" ").append(event.localize("command.weather.clouds")).append(": **")
+                    .append(Math.floor(forecast.getDouble("cloudCover")*100)).append("**%\n");
+            sb.append(Const.LINE_START).append(" ").append(event.localize("command.weather.visibility")).append(": **")
+                    .append(Math.floor(forecast.getDouble("visibility"))).append("**%\n");
 
             builder.setDescription(sb).setColor(event.getSelfMember()==null? Color.decode("#33ff00"):event.getSelfMember().getColor());
             builder.setThumbnail("https://homer.idroid.me/assets/weather/"+forecast.getString("icon")+".png");
-            builder.setFooter("Data from DarkSky API", "https://cdn.discordapp.com/emojis/464245557049950238.png");
+            builder.setFooter("command.weather.footer", "https://cdn.discordapp.com/emojis/464245557049950238.png");
             event.reply(mb.setEmbed(builder.build()).build());
         });
     }

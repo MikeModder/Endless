@@ -22,6 +22,7 @@ import me.artuto.endless.Bot;
 import me.artuto.endless.commands.EndlessCommand;
 import me.artuto.endless.commands.EndlessCommandEvent;
 import me.artuto.endless.commands.cmddata.Categories;
+import me.artuto.endless.core.entities.GuildSettings;
 import me.artuto.endless.core.entities.Ignore;
 import me.artuto.endless.utils.ArgsUtils;
 import me.artuto.endless.utils.GuildUtils;
@@ -171,7 +172,7 @@ public class IgnoreCmd extends EndlessCommand
         {
             EmbedBuilder builder = new EmbedBuilder();
             IMentionable entity;
-            List<Ignore> ignores = GuildUtils.getIgnoredEntities(event.getGuild());
+            List<Ignore> ignores = ((GuildSettings)event.getClient().getSettingsFor(event.getGuild())).getIgnoredEntities();
             StringBuilder sb = new StringBuilder();
 
             if(ignores.isEmpty())

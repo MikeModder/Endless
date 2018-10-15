@@ -68,18 +68,6 @@ public class GuildUtils
         return settings.getStarboardCount();
     }
 
-    public static List<Ignore> getIgnoredEntities(Guild guild)
-    {
-        GuildSettings settings = bot.endless.getGuildSettings(guild);
-        return settings.getIgnoredEntities();
-    }
-
-    public static List<Role> getRoleMeRoles(Guild guild)
-    {
-        GuildSettings settings = bot.endless.getGuildSettings(guild);
-        return settings.getRoleMeRoles();
-    }
-
     public static Role getAdminRole(Guild guild)
     {
         return guild.getRolesByName("Admin", true)

@@ -10,15 +10,12 @@ import me.artuto.endless.commands.cmddata.Categories;
 import me.artuto.endless.utils.ArgsUtils;
 import me.artuto.endless.utils.ChecksUtil;
 import me.artuto.endless.utils.LogUtils;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.utils.IOUtil;
 import okhttp3.*;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
@@ -65,12 +62,12 @@ public class ArchiveCmd extends EndlessCommand
             return;
         if(!(ChecksUtil.hasPermission(event.getSelfMember(), tc, Permission.MESSAGE_HISTORY)))
         {
-            event.replyError("I don't have `Message History` permission on that channel!");
+            event.replyError("command.archive.noPerms.bot");
             return;
         }
         if(!(ChecksUtil.hasPermission(event.getMember(), tc, Permission.MESSAGE_HISTORY)))
         {
-            event.replyError("You don't have `Message History` permission on that channel!");
+            event.replyError("command.archive.noPerms.executor");
             return;
         }
 
@@ -78,7 +75,7 @@ public class ArchiveCmd extends EndlessCommand
             num = 100;
         int limit = num;
         bot.archiveThread.submit(() -> {
-            event.reply(Const.LOADING+" Working on it!");
+            event.reply(false, Const.LOADING+" "+event.localize("command.archive.working"));
             List<Message> msgs = new LinkedList<>();
             MessageHistory history = tc.getHistory();
             boolean finished = false;
@@ -92,65 +89,50 @@ public class ArchiveCmd extends EndlessCommand
             }
             if(msgs.isEmpty())
             {
-                event.replyWarning("That channel is empty!");
+                event.replyWarning("command.archive.empty");
                 return;
             }
 
             msgs.sort(Comparator.comparing(Message::getCreationTime));
             String name = String.format("archive-%s.txt", tc.getId());
             File file = LogUtils.createMessagesTextFile(msgs, name);
-            String toSend = event.getAuthor().getAsMention()+": Here is your dump of "+tc.getAsMention();
+            String toSend = event.localize("command.archive.success", event.getAuthor().getAsMention(), tc.getAsMention());
             if(file==null)
             {
-                event.replyError("Could not generate text file!");
+                event.replyError("command.archive.error.writing");
                 return;
             }
-            if(file.length()<=event.getJDA().getSelfUser().getAllowedFileSize())
-            {
-                try
-                {
-                    OkHttpClient client = new OkHttpClient();
-                    RequestBody formBody = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("file",
-                            name, RequestBody.create(MediaType.parse("application/octet-stream"), IOUtil.readFully(file))).build();
-                    Request request = new Request.Builder().url("https://file.io").post(formBody).build();
-                    client.newCall(request).enqueue(new Callback()
-                    {
-                        @ParametersAreNonnullByDefault
-                        @Override
-                        public void onResponse(Call call, Response response)
-                        {
-                            JSONObject json = new JSONObject(new JSONTokener(response.body().byteStream()));
-                            event.replySuccess(toSend+": <**"+json.getString("link")+"**>");
-                            file.delete();
-                        }
 
-                        @ParametersAreNonnullByDefault
-                        @Override
-                        public void onFailure(Call call, IOException e)
-                        {
-                            event.replyError(event.getAuthor().getAsMention()+": Hey, there was an error while uploading the file, however, you can join "+
-                                    "the support server and ask for the file. Use `"+event.getClient().getPrefix()+"help support` to join.");
-                            LOG.error("Error while uploading the dump {} to file.io", name, e);
-                        }
-                    });
-                }
-                catch(IOException e)
-                {
-                    event.replyError(event.getAuthor().getAsMention()+": Hey, there was an error while uploading the file, however, you can join " +
-                            "the support server and ask for the file. Use `"+event.getClient().getPrefix()+"help support` to join.");
-                    LOG.error("Error while uploading the dump {} to file.io", name, e);
-                }
-            }
-            else
+            try
             {
-                event.getTextChannel().sendFile(file, name, new MessageBuilder().append(toSend).build()).queue(s -> {
-                    event.reactSuccess();
-                    file.delete();
-                }, e -> {
-                    event.replyError(event.getAuthor().getAsMention()+": Hey, there was an error while uploading the file, however, you can join " +
-                            "the support server and ask for the file. Use `"+event.getClient().getPrefix()+"help support` to join.");
-                    LOG.error("Error while uploading the dump {} to Discord", name, e);
+                OkHttpClient client = new OkHttpClient();
+                RequestBody formBody = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("file",
+                        name, RequestBody.create(MediaType.parse("text/plain"), IOUtil.readFully(file))).build();
+                Request request = new Request.Builder().url("https://transfer.sh").post(formBody).build();
+                client.newCall(request).enqueue(new Callback()
+                {
+                    @ParametersAreNonnullByDefault
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException
+                    {
+                        String link = response.body().string();
+                        event.replySuccess(false, toSend+": <**"+link+"**>");
+                        file.delete();
+                    }
+
+                    @ParametersAreNonnullByDefault
+                    @Override
+                    public void onFailure(Call call, IOException e)
+                    {
+                        event.replyError("command.archive.error.upload", event.getAuthor().getAsMention());
+                        LOG.error("Error while uploading the dump {} to transfer.sh", name, e);
+                    }
                 });
+            }
+            catch(IOException e)
+            {
+                event.replyError("command.archive.error.upload", event.getAuthor().getAsMention());
+                LOG.error("Error while uploading the dump {} to transfer.sh", name, e);
             }
     });
     }

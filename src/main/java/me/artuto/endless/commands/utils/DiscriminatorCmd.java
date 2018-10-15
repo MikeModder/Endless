@@ -83,14 +83,14 @@ public class DiscriminatorCmd extends EndlessCommand
             }
             catch(NumberFormatException ignored)
             {
-                event.replyError("The number you entered isn't valid!");
+                event.replyError("command.discrim.invalid.number");
                 return;
             }
         }
 
         if(number<1 || number>9999)
         {
-            event.replyError("The discriminator must be between `0001` and `9999`!");
+            event.replyError("command.discrim.invalid.range");
             return;
         }
 
@@ -105,7 +105,7 @@ public class DiscriminatorCmd extends EndlessCommand
         menu.clearItems();
         users.forEach(u -> menu.addItems("**"+u.getName()+"**#**"+u.getDiscriminator()+"** (ID: "+u.getId()+")"));
         Paginator p = menu.setColor(event.isFromType(ChannelType.TEXT)?event.getSelfMember().getColor():Color.decode("#33ff00"))
-                .setText(event.getClient().getSuccess()+" Users found with Discriminator #"+discrim)
+                .setText(event.getClient().getSuccess()+" "+event.localize("command.discrim.title", discrim))
                 .setUsers(event.getAuthor()).build();
         p.paginate(event.getChannel(), 1);
     }

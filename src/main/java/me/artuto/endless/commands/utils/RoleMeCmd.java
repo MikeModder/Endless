@@ -17,16 +17,15 @@
 
 package me.artuto.endless.commands.utils;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import me.artuto.endless.Bot;
 import me.artuto.endless.Const;
+import me.artuto.endless.Endless;
 import me.artuto.endless.commands.EndlessCommand;
 import me.artuto.endless.commands.EndlessCommandEvent;
 import me.artuto.endless.commands.cmddata.Categories;
+import me.artuto.endless.core.entities.GuildSettings;
+import me.artuto.endless.utils.ArgsUtils;
 import me.artuto.endless.utils.ChecksUtil;
-import me.artuto.endless.utils.FormatUtil;
-import me.artuto.endless.utils.GuildUtils;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -49,7 +48,7 @@ public class RoleMeCmd extends EndlessCommand
         this.help = "Self-assignable roles.";
         this.arguments = "[roleme role]";
         this.category = Categories.UTILS;
-        this.children = new Command[]{new AddCmd(), new RemoveCmd()};
+        this.children = new EndlessCommand[]{new AddCmd(), new RemoveCmd()};
         this.botPerms = new Permission[]{Permission.MANAGE_ROLES};
         this.needsArguments = false;
     }
@@ -59,65 +58,62 @@ public class RoleMeCmd extends EndlessCommand
     {
         if(!(bot.dataEnabled))
         {
-            event.replyError("Endless is running on No-data mode.");
+            event.replyError("core.data.disabled");
             return;
         }
 
         String args = event.getArgs();
         Guild guild = event.getGuild();
-        List<Role> rolemeRoles = GuildUtils.getRoleMeRoles(guild);
+        List<Role> rolemeRoles = ((GuildSettings)event.getClient().getSettingsFor(guild)).getRoleMeRoles();
         Member member = event.getMember();
-        Role role;
 
         if(args.isEmpty())
         {
-            if(rolemeRoles==null)
-                event.replyError("Something has gone wrong while getting the settings, please contact the bot owner.");
-            else if(rolemeRoles.isEmpty())
-                event.replyWarning("This guild doesn't has any RoleMe roles.");
+            if(rolemeRoles.isEmpty())
+                event.replyWarning("command.roleme.empty");
             else
             {
                 StringBuilder sb = new StringBuilder();
-                sb.append(":performing_arts: RoleMe roles available on **").append(guild.getName()).append("**:").append("\n");
+                sb.append(":performing_arts: ").append(event.localize("command.roleme.list", guild.getName())).append("\n");
 
                 for(Role r : rolemeRoles)
                     sb.append(Const.LINE_START).append(" ").append(r.getName()).append("\n");
 
-                event.reply(sb.toString());
+                event.reply(false, sb.toString());
             }
         }
         else
         {
-            List<Role> list = FinderUtil.findRoles(args, event.getGuild());
-
-            if(list.isEmpty())
-            {
-                event.replyWarning("I was not able to found a role with the provided arguments: '"+event.getArgs()+"'");
+            Role role = ArgsUtils.findRole(event, args);
+            if(role==null)
                 return;
-            }
-            else if(list.size()>1)
-            {
-                event.replyWarning(FormatUtil.listOfRoles(list, event.getArgs()));
-                return;
-            }
-            else role = list.get(0);
 
             if(rolemeRoles.contains(role))
             {
                 if(!(ChecksUtil.canMemberInteract(event.getSelfMember(), role)))
-                    event.replyError("I can't interact with that role!");
+                    event.replyError("core.error.cantInteract.role.bot");
                 else
                 {
                     if(member.getRoles().contains(role))
-                        guild.getController().removeSingleRoleFromMember(member, role).queue(s -> event.replySuccess("The role *"+role.getName()+"* has been removed."),
-                                e -> event.replyError("Something has gone wrong while removing the role from you, please contact the bot owner."));
+                    {
+                        guild.getController().removeSingleRoleFromMember(member, role).queue(s ->
+                                event.replySuccess("command.roleme.removed", role.getName()), e -> {
+                            event.replyError("command.roleme.error.removing");
+                            Endless.LOG.error("Could not remove roleme role {} from member {}", role.getId(), member.getUser().getId(), e);
+                        });
+                    }
                     else
-                        guild.getController().addSingleRoleToMember(member, role).queue(s -> event.replySuccess("You have been given the role *"+role.getName()+"*"),
-                                e -> event.replyError("Something has gone wrong while giving you the role, please contact the bot owner."));
+                    {
+                        guild.getController().addSingleRoleToMember(member, role).queue(s ->
+                                event.replySuccess("command.roleme.given"), e -> {
+                            event.replyError("command.roleme.error.giving");
+                            Endless.LOG.error("Could not add roleme role {} to member {}", role.getId(), member.getUser().getId(), e);
+                        });
+                    }
                 }
             }
             else
-                event.replyWarning("That role is not enabled for RoleMe!");
+                event.replyWarning("command.roleme.notEnabled");
         }
     }
 
@@ -138,41 +134,29 @@ public class RoleMeCmd extends EndlessCommand
         {
             if(!(bot.dataEnabled))
             {
-                event.replyError("Endless is running on No-data mode.");
+                event.replyError("core.data.disabled");
                 return;
             }
 
             Guild guild = event.getGuild();
-            List<Role> rolemeRoles = GuildUtils.getRoleMeRoles(guild);
+            List<Role> rolemeRoles = ((GuildSettings)event.getClient().getSettingsFor(guild)).getRoleMeRoles();
             String args = event.getArgs();
-            Role role;
-
-            List<Role> list = FinderUtil.findRoles(args, event.getGuild());
-
-            if(list.isEmpty())
-            {
-                event.replyWarning("I was not able to found a role with the provided arguments: '"+event.getArgs()+"'");
+            Role role = ArgsUtils.findRole(event, args);
+            if(role==null)
                 return;
-            }
-            else if(list.size()>1)
-            {
-                event.replyWarning(FormatUtil.listOfRoles(list, event.getArgs()));
-                return;
-            }
-            else role = list.get(0);
 
             if(rolemeRoles.contains(role))
             {
-                event.replyError("That role is already on the RoleMe roles list!");
+                event.replyError("command.roleme.add.alreadyAdded");
                 return;
             }
 
             if(!(ChecksUtil.canMemberInteract(event.getSelfMember(), role)))
-                event.replyError("I can't interact with that role!");
+                event.replyError("core.error.cantInteract.role.bot");
             else
             {
                 bot.gsdm.addRolemeRole(guild, role);
-                event.replySuccess("Successfully added the role *"+role.getName()+"* to the RoleMe roles list.");
+                event.replySuccess("command.roleme.add.added", role.getName());
             }
         }
     }
@@ -194,38 +178,24 @@ public class RoleMeCmd extends EndlessCommand
         {
             if(!(bot.dataEnabled))
             {
-                event.replyError("Endless is running on No-data mode.");
+                event.replyError("core.data.disabled");
                 return;
             }
 
             Guild guild = event.getGuild();
-            List<Role> rolemeRoles = GuildUtils.getRoleMeRoles(guild);
+            List<Role> rolemeRoles = ((GuildSettings)event.getClient().getSettingsFor(guild)).getRoleMeRoles();
             String args = event.getArgs();
-            Role role;
-
-            List<Role> list = FinderUtil.findRoles(args, event.getGuild());
-
-            if(list.isEmpty())
-            {
-                event.replyWarning("I was not able to found a role with the provided arguments: '"+event.getArgs()+"'");
-                return;
-            }
-            else if(list.size()>1)
-            {
-                event.replyWarning(FormatUtil.listOfRoles(list, event.getArgs()));
-                return;
-            }
-            else role = list.get(0);
-
+            Role role = ArgsUtils.findRole(event, args);
+            if(role == null) return;
 
             if(!(rolemeRoles.contains(role)))
             {
-                event.replyError("That role isn't on the RoleMe roles list!");
+                event.replyError("command.roleme.remove.notAdded");
                 return;
             }
 
             bot.gsdm.removeRolemeRole(guild, role);
-            event.replySuccess("Successfully removed the role *"+role.getName()+"* from the RoleMe roles list.");
+            event.replySuccess("command.roleme.remove.removed", role.getName());
         }
     }
 }

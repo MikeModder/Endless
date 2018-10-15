@@ -35,11 +35,11 @@ public class ArgsUtils
 {
     private static final Pattern ID = Pattern.compile("(?:^|\\s)(\\d{17,22})(?:$|\\s)");
 
-    public static int parseTime(String timestr)
+    public static long parseTime(String timestr)
     {
         timestr = timestr.replaceAll("(?i)(\\s|,|and)","").replaceAll("(?is)(-?\\d+|[a-z]+)", "$1 ").trim();
         String[] vals = timestr.split("\\s+");
-        int timeinseconds = 0;
+        long timeinseconds = 0;
 
         try
         {
@@ -302,7 +302,7 @@ public class ArgsUtils
 
     public static String[] splitWithReasonAndTime(int limit, String args, String regex)
     {
-        int time;
+        long time;
         String reason = "[no reason specified]";
         String target;
 

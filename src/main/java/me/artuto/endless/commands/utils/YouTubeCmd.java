@@ -60,7 +60,7 @@ public class YouTubeCmd extends EndlessCommand
     {
         if(bot.config.getYouTubeKey().isEmpty())
         {
-            event.replyError("YouTube API Key is not configured!");
+            event.replyError(false, "YouTube API Key is not configured!");
             return;
         }
 
@@ -71,13 +71,13 @@ public class YouTubeCmd extends EndlessCommand
             search.setKey(bot.config.getYouTubeKey());
             search.setQ(query);
             search.setType("video,playlist");
-            search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
-            search.setMaxResults(25L);
+            search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url,id/playlistId)");
+            search.setMaxResults(10L);
             SearchListResponse searchResponse = search.execute();
             List<SearchResult> searchResultList = searchResponse.getItems();
 
             if(searchResultList==null)
-                event.replyWarning("Nothing found with the provided arguments!");
+                event.replyWarning("command.yt.notFound");
             else
             {
                 StringBuilder sb = new StringBuilder();
@@ -85,7 +85,10 @@ public class YouTubeCmd extends EndlessCommand
                 ResourceId rId = result.getId();
 
                 if(rId.getKind()==null)
+                {
                     event.reactError();
+                    return;
+                }
 
                 if(rId.getKind().equals("youtube#playlist"))
                     sb.append(":file_folder: **https://youtube.com/playlist?list=").append(rId.getPlaylistId()).append("**");

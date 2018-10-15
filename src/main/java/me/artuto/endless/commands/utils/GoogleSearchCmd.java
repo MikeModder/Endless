@@ -20,7 +20,6 @@ package me.artuto.endless.commands.utils;
 import com.google.api.services.customsearch.Customsearch;
 import com.google.api.services.customsearch.model.Result;
 import com.google.api.services.customsearch.model.Search;
-import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.menu.OrderedMenu;
 import me.artuto.endless.Bot;
 import me.artuto.endless.commands.EndlessCommand;
@@ -67,12 +66,12 @@ public class GoogleSearchCmd extends EndlessCommand
     {
         if(bot.config.getGoogleKey().isEmpty())
         {
-            event.replyError("Google Search API Key is not configured!");
+            event.replyError("command.google.key");
             return;
         }
         if(bot.config.getGoogleSearcherId().isEmpty())
         {
-            event.replyError("Google Searcher ID is not configured!");
+            event.replyError("command.google.searcher");
             return;
         }
 
@@ -90,7 +89,7 @@ public class GoogleSearchCmd extends EndlessCommand
 
         if(num<1 || num>10)
         {
-            event.replyWarning("I can only get 1 to 10 results at once!");
+            event.replyWarning("command.google.range");
             return;
         }
 
@@ -104,7 +103,7 @@ public class GoogleSearchCmd extends EndlessCommand
             List<Result> resultList = searchResponse.getItems();
 
             if(resultList==null)
-                event.replyWarning("Nothing found with the provided arguments!");
+                event.replyWarning("command.google.notFound");
             else
             {
                 if(resultList.size()==1)
@@ -115,7 +114,7 @@ public class GoogleSearchCmd extends EndlessCommand
                     int option = 0;
                     oBuilder.setUsers(event.getAuthor()).setColor(event.isFromType(ChannelType.TEXT)?event.getSelfMember().getColor():Color.decode("#33ff00"))
                             .setSelection((m, o) -> handleSelection(event, resultList.get(o-1), query));
-                    oBuilder.setText(":mag: Results for `"+query+"`");
+                    oBuilder.setText(":mag: "+event.localize("command.google.title", query));
                     for(Result rslt : resultList)
                     {
                         if(option>9)
@@ -131,7 +130,7 @@ public class GoogleSearchCmd extends EndlessCommand
         catch(IOException ignored) {}
     }
 
-    private void handleSelection(CommandEvent event, Result result, String query)
+    private void handleSelection(EndlessCommandEvent event, Result result, String query)
     {
         EmbedBuilder builder = new EmbedBuilder();
         MessageBuilder mb = new MessageBuilder();
@@ -139,7 +138,7 @@ public class GoogleSearchCmd extends EndlessCommand
         String descrip = result.getSnippet();
 
         builder.setColor(event.isFromType(ChannelType.TEXT)?event.getSelfMember().getColor():Color.decode("#33ff00")).setDescription(link+descrip);
-        builder.setFooter("Results from Google Search API", "https://cdn.discordapp.com/emojis/447911997783277569.png");
-        event.reply(mb.setContent(":mag: Results for `"+query+"`").setEmbed(builder.build()).build());
+        builder.setFooter("command.google.footer", "https://cdn.discordapp.com/emojis/447911997783277569.png");
+        event.reply(mb.setContent(":mag: "+event.localize("command.google.title", query)).setEmbed(builder.build()).build());
     }
 }
