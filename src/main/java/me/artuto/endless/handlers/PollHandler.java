@@ -17,7 +17,6 @@
 
 package me.artuto.endless.handlers;
 
-import me.artuto.endless.Bot;
 import me.artuto.endless.core.entities.Poll;
 import me.artuto.endless.utils.ChecksUtil;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -27,8 +26,8 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +58,7 @@ public class PollHandler
                 sb.append("I couldn't determine a winner option for this poll.");
             else
             {
-                List<Integer> counts = new LinkedList<>();
+                List<Integer> counts = new ArrayList<>();
                 msg.getReactions().forEach(r -> counts.add(r.isSelf()?(r.getCount()-1):r.getCount()));
                 int max = Collections.max(counts);
                 int totalCount = 0;
@@ -86,7 +85,6 @@ public class PollHandler
                 }
             }
             tc.sendMessage(builder.setDescription(sb).build()).queue();
-        }, e -> tc.sendMessageFormat("%s Poll with Message ID %s was deleted from this channel!",
-                Bot.getInstance().client.getWarning(), poll.getMessageId()).queue());
+        }, e -> {});
     }
 }

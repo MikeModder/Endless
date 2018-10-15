@@ -92,11 +92,6 @@ public class ImportedTagHandler
                     return;
 
                 CommandEvent cevent = new CommandEvent(event, commandArgs, client);
-                if(tag.isNSFW() && !(MiscUtils.isNSFWAllowed(cevent)))
-                {
-                    cevent.replyError("This tag has been marked as NSFW! To use this tag mark this channel as NSFW.");
-                    return;
-                }
                 if(!(client.getListener()==null))
                     client.getListener().onCommand(cevent, tagCommand);
                 tagCommand.run(cevent);

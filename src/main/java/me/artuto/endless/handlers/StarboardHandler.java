@@ -81,7 +81,9 @@ public class StarboardHandler
 
             if(!(starboard.canTalk()))
             {
-                FinderUtil.getDefaultChannel(guild).sendMessage("I can't talk on the starboard!").queue(null, e -> guild.getOwner().getUser().openPrivateChannel().queue(s -> s.sendMessage("I can't talk on the starboard!").queue(null, null)));
+                FinderUtil.getDefaultChannel(guild).sendMessage("I can't talk on the starboard!").queue(null,
+                        e -> guild.getOwner().getUser().openPrivateChannel().queue(s -> s.sendMessage("I can't talk on the starboard!")
+                                .queue(null, null)));
                 return;
             }
 
@@ -339,25 +341,24 @@ public class StarboardHandler
 
         String sbEmote = Bot.getInstance().endless.getGuildSettings(msg.getGuild()).getStarboardEmote();
         TextChannel tc = GuildUtils.getStarboardChannel(msg.getGuild());
-        tc.getMessageById(starboardMsg).queue(s -> {
-            String emote;
-            if(!(s.getEmotes().isEmpty()))
+        Message s = tc.getMessageById(starboardMsg).complete();
+        String emote;
+        if(!(s.getEmotes().isEmpty()))
+        {
+            emote = sbEmote;
+            s.editMessage(s.getContentRaw().replaceAll(Message.MentionType.EMOTE.getPattern().pattern(), getEmote(amount, s, emote))
+                    .replaceAll("\\*\\*(\\d+)\\*\\*", "**"+amount+"**")).complete();
+        }
+        else
+        {
+            List<String> emojis = EmojiParser.extractEmojis(sbEmote);
+            if(!(emojis.isEmpty()))
             {
-                emote = sbEmote;
-                s.editMessage(s.getContentRaw().replaceAll(Message.MentionType.EMOTE.getPattern().pattern(), getEmote(amount, s, emote))
-                        .replaceAll("\\*\\*(\\d+)\\*\\*", "**"+amount+"**")).queue();
+                emote = emojis.get(0);
+                s.editMessage(s.getContentRaw().replaceAll("(\\\\u\\w+|\\\\u\\w+\\\\u\\w+)", getEmote(amount, s, emote))
+                        .replaceAll("\\*\\*(\\d+)\\*\\*", "**"+amount+"**")).complete();
             }
-            else
-            {
-                List<String> emojis = EmojiParser.extractEmojis(sbEmote);
-                if(!(emojis.isEmpty()))
-                {
-                    emote = emojis.get(0);
-                    s.editMessage(s.getContentRaw().replaceAll("(\\\\u\\w+|\\\\u\\w+\\\\u\\w+)", getEmote(amount, s, emote))
-                            .replaceAll("\\*\\*(\\d+)\\*\\*", "**"+amount+"**")).queue();
-                }
-            }
-        },null);
+        }
     }
 
     private static void addMessage(Message starredMsg, TextChannel starboard)
@@ -420,10 +421,9 @@ public class StarboardHandler
         if(starboard==null)
             return;
 
-        starboard.getMessageById(starboardMsg.getStarboardMessageId()).queue(s -> {
-            s.delete().queue();
-            sdm.deleteMessage(starboardMsg.getMessageIdLong(), starboardMsg.getStarboardMessageIdLong());
-        }, e -> sdm.deleteMessage(starboardMsg.getMessageIdLong(), starboardMsg.getStarboardMessageIdLong()));
+        Message s = starboard.getMessageById(starboardMsg.getStarboardMessageId()).complete();
+        s.delete().queue();
+        sdm.deleteMessage(starboardMsg.getMessageIdLong(), starboardMsg.getStarboardMessageIdLong());
     }
 
     private static void check(Guild guild, long msg)
