@@ -65,6 +65,7 @@ import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 import okhttp3.*;
@@ -290,7 +291,23 @@ public class Bot extends ListenerAdapter
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setGame(Game.playing("[ENDLESS] Loading..."))
                 .setBulkDeleteSplittingEnabled(false)
-                .setEnableShutdownHook(true);
+                .setEnableShutdownHook(true)
+                .setSessionController(new SessionControllerAdapter(){
+                    @Override
+                    protected void runWorker()
+                    {
+                        synchronized(lock)
+                        {
+                            if(workerHandle==null)
+                            {
+                                workerHandle = new SessionControllerAdapter.QueueWorker(20);
+                                System.gc();
+                                workerHandle.start();
+                            }
+                        }
+                    }
+                });
+
         if(maintenance)
             builder.addEventListeners(this, client);
         else
