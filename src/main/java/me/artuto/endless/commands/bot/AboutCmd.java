@@ -68,7 +68,6 @@ public class AboutCmd extends EndlessCommand
         builder.setDescription("Hi, I'm Endless! A multipurpose bot designed to be smart.\n"+"If you found a bug please contact my dad\n"+"("+Const.DEV+")!\n");
         builder.addField(":bust_in_silhouette: Owner:", "**"+ownername+"** (**"+ownerid+"**)", false);
         builder.addField("<:jda:325395909347115008>  Library:", "Java Discord API (JDA) "+JDAInfo.VERSION+" and JDA Utilities "+JDAUtilitiesInfo.VERSION, false);
-        builder.addField("<:github:326118305062584321> GitHub:", "Did you found a bug? Want improve something?\n"+"Please open an Issue or create a PR on [**GitHub**](https://github.com/ArtutoGamer/Endless)", false);
         builder.addField(":link: Support Guild:", "**[Support]("+Const.INVITE+")**\n", false);
         builder.setFooter("Version: "+Const.VERSION+" | Latest Start", null);
         builder.setColor(color);
