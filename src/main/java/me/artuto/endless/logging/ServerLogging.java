@@ -265,7 +265,8 @@ public class ServerLogging
         TextChannel cleanLog = event.getJDA().asBot().getShardManager().getTextChannelById(470068055322525708L);
         TextChannel serverlog = guild.getTextChannelById(gs.getServerlog());
         List<Message> messages = new LinkedList<>();
-        event.getMessageIds().stream().filter(id -> !(MessagesLogging.getMsg(Long.valueOf(id))==null)).forEach(id -> messages.add(MessagesLogging.getMsg(Long.valueOf(id))));
+        event.getMessageIds().stream().filter(id -> !(MessagesLogging.getMsg(Long.valueOf(id))==null)).
+                forEach(id -> messages.add(MessagesLogging.getMsg(Long.valueOf(id))));
 
         if(serverlog==null || !(serverlog.canTalk()) || LogUtils.isTypeIgnored("bulkdelete", serverlog))
             return;
@@ -281,7 +282,7 @@ public class ServerLogging
         String toSend;
         toSend = String.format(BULK_DELETE, FormatUtil.timeF(now, gs.getTimezone()), "", event.getMessageIds().size(), channel.getAsMention(), messages.size());
 
-        Sender.sendMessage(serverlog, toSend, m -> {
+        Sender.sendMessage(serverlog, toSend, m -> bot.endlessPool.submit(() -> {
             File f = LogUtils.createMessagesTextFile(messages, "Messages"+channel.getId()+".txt");
             if(!(f==null) && ChecksUtil.hasPermission(guild.getSelfMember(), serverlog, Permission.MESSAGE_EMBED_LINKS))
             {
@@ -290,7 +291,7 @@ public class ServerLogging
                 builder.setDescription("[`\uD83D\uDCC4 View`]("+text.getViewUrl()+") | [`\uD83D\uDCE9 Download`]("+text.getCDNUrl()+")");
                 m.editMessage(mb.setEmbed(builder.build()).build()).queue(s -> f.delete(), e -> f.delete());
             }
-        });
+        }));
     }
 
     // User Event
