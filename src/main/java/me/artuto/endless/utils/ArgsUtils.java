@@ -17,7 +17,6 @@
 
 package me.artuto.endless.utils;
 
-import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import me.artuto.endless.commands.EndlessCommandEvent;
 import net.dv8tion.jda.core.entities.*;
@@ -69,12 +68,12 @@ public class ArgsUtils
         return timeinseconds;
     }
 
-    public static Channel findChannel(CommandEvent event, String query)
+    public static Channel findChannel(EndlessCommandEvent event, String query)
     {
         return findChannel(false, event, query);
     }
 
-    public static Channel findChannel(boolean categories, CommandEvent event, String query)
+    public static Channel findChannel(boolean categories, EndlessCommandEvent event, String query)
     {
         Guild guild = event.getGuild();
         List<TextChannel> tcs = FinderUtil.findTextChannels(query, guild);
@@ -88,12 +87,12 @@ public class ArgsUtils
                     List<Category> cats = FinderUtil.findCategories(query, guild);
                     if(cats.isEmpty())
                     {
-                        event.replyWarning("I was not able to found a channel with the provided arguments: '"+query+"'");
+                        event.replyWarning("core.finder.empty.channel", query);
                         return null;
                     }
                     else if(cats.size()>1)
                     {
-                        event.replyWarning(FormatUtil.listOfCategories(cats, query));
+                        event.replyWarning(FormatUtil.listOfCategories(event, cats, query));
                         return null;
                     }
                     else
@@ -101,13 +100,13 @@ public class ArgsUtils
                 }
                 else
                 {
-                    event.replyWarning("I was not able to found a channel with the provided arguments: '"+query+"'");
+                    event.replyWarning("core.finder.empty.channel", query);
                     return null;
                 }
             }
             else if(vcs.size()>1)
             {
-                event.replyWarning(FormatUtil.listOfVcChannels(vcs, query));
+                event.replyWarning(FormatUtil.listOfVcChannels(event, vcs, query));
                 return null;
             }
             else
@@ -115,42 +114,42 @@ public class ArgsUtils
         }
         else if(tcs.size()>1)
         {
-            event.replyWarning(FormatUtil.listOfTcChannels(tcs, query));
+            event.replyWarning(FormatUtil.listOfTcChannels(event, tcs, query));
             return null;
         }
         else
             return tcs.get(0);
     }
 
-    public static Emote findEmote(CommandEvent event, String query)
+    public static Emote findEmote(EndlessCommandEvent event, String query)
     {
         List<Emote> list = FinderUtil.findEmotes(query, event.getJDA());
         if(list.isEmpty())
         {
-            event.replyWarning("No Emotes found matching \""+query+"\"");
+            event.replyWarning("core.finder.empty.emote", query);
             return null;
         }
         else if(list.size()>1)
         {
-            event.replyWarning(FormatUtil.listOfEmotes(list, query));
+            event.replyWarning(FormatUtil.listOfEmotes(event, list, query));
             return null;
         }
         else
             return list.get(0);
     }
 
-    public static Member findMember(CommandEvent event, String query)
+    public static Member findMember(EndlessCommandEvent event, String query)
     {
         List<Member> list = FinderUtil.findMembers(query, event.getGuild());
 
         if(list.isEmpty())
         {
-            event.replyWarning("I was not able to found a user with the provided arguments: '"+query+"'");
+            event.replyWarning("core.finder.empty.member", query);
             return null;
         }
         else if(list.size()>1)
         {
-            event.replyWarning(FormatUtil.listOfMembers(list, query));
+            event.replyWarning(FormatUtil.listOfMembers(event, list, query));
             return null;
         }
         else
@@ -163,24 +162,31 @@ public class ArgsUtils
         if(list.isEmpty())
         {
             if(jda)
+            {
                 list = FinderUtil.findTextChannels(query, event.getJDA());
 
-            if(list.isEmpty())
-            {
-                event.replyWarning("No Text Channels found matching \""+query+"\"");
-                return null;
-            }
-            else if(list.size()>1)
-            {
-                event.replyWarning(FormatUtil.listOfTcChannels(list, query));
-                return null;
+                if(list.isEmpty())
+                {
+                    event.replyWarning("core.finder.empty.tc", query);
+                    return null;
+                }
+                else if(list.size()>1)
+                {
+                    event.replyWarning(FormatUtil.listOfTcChannels(event, list, query));
+                    return null;
+                }
+                else
+                    return list.get(0);
             }
             else
-                return list.get(0);
+            {
+                event.replyWarning("core.finder.empty.tc", query);
+                return null;
+            }
         }
         else if(list.size()>1)
         {
-            event.replyWarning(FormatUtil.listOfTcChannels(list, query));
+            event.replyWarning(FormatUtil.listOfTcChannels(event, list, query));
             return null;
         }
         else
@@ -197,37 +203,37 @@ public class ArgsUtils
         List<Role> list = FinderUtil.findRoles(query, event.getGuild());
         if(list.isEmpty())
         {
-            event.replyWarning("No Roles found matching \""+query+"\"");
+            event.replyWarning("core.finder.empty.role", query);
             return null;
         }
         else if(list.size()>1)
         {
-            event.replyWarning(FormatUtil.listOfRoles(list, query));
+            event.replyWarning(FormatUtil.listOfRoles(event, list, query));
             return null;
         }
         else
             return list.get(0);
     }
 
-    public static User findBannedUser(CommandEvent event, String query)
+    public static User findBannedUser(EndlessCommandEvent event, String query)
     {
         List<User> list = FinderUtil.findBannedUsers(query, event.getGuild());
 
         if(list.isEmpty())
         {
-            event.replyWarning("I was not able to found a banned user with the provided arguments: '"+query+"'");
+            event.replyWarning("core.finder.empty.user.banned", query);
             return null;
         }
         else if(list.size()>1)
         {
-            event.replyWarning(FormatUtil.listOfUsers(list, query));
+            event.replyWarning(FormatUtil.listOfUsers(event, list, query));
             return null;
         }
         else
             return list.get(0);
     }
 
-    public static User findUser(boolean full, CommandEvent event, String query)
+    public static User findUser(boolean full, EndlessCommandEvent event, String query)
     {
         List<User> list = FinderUtil.findUsers(query, event.getJDA());
 
@@ -238,19 +244,17 @@ public class ArgsUtils
                 Matcher m = ID.matcher(query);
                 if(m.matches())
                 {
-                    try
-                    {
-                        return event.getJDA().retrieveUserById(m.group(1)).complete();
-                    }
+                    try {return event.getJDA().retrieveUserById(m.group(1)).complete();}
                     catch(ErrorResponseException ignored) {}
                 }
             }
-            event.replyWarning("I was not able to found a user with the provided arguments: '"+query+"'");
+
+            event.replyWarning("core.finder.empty.user", query);
             return null;
         }
         else if(list.size()>1)
         {
-            event.replyWarning(FormatUtil.listOfUsers(list, query));
+            event.replyWarning(FormatUtil.listOfUsers(event, list, query));
             return null;
         }
         else
@@ -262,12 +266,12 @@ public class ArgsUtils
         List<VoiceChannel> list = FinderUtil.findVoiceChannels(query, event.getGuild());
         if(list.isEmpty())
         {
-            event.replyWarning("No Voice Channels found matching \""+query+"\"");
+            event.replyWarning("core.finder.empty.vc", query);
             return null;
         }
         else if(list.size()>1)
         {
-            event.replyWarning(FormatUtil.listOfVcChannels(list, query));
+            event.replyWarning(FormatUtil.listOfVcChannels(event, list, query));
             return null;
         }
         else
@@ -281,10 +285,7 @@ public class ArgsUtils
             String[] argsArr = args.split("\\s", limit);
             return new String[]{argsArr[0], argsArr[1]};
         }
-        catch(IndexOutOfBoundsException e)
-        {
-            return new String[]{args, ""};
-        }
+        catch(IndexOutOfBoundsException e) {return new String[]{args, ""};}
     }
 
     public static String[] splitWithReason(int limit, String args, String regex)
@@ -294,10 +295,7 @@ public class ArgsUtils
             String[] argsArr = args.split(regex, limit);
             return new String[]{argsArr[0], argsArr[1]};
         }
-        catch(IndexOutOfBoundsException e)
-        {
-            return new String[]{args, "[no reason provided]"};
-        }
+        catch(IndexOutOfBoundsException e) {return new String[]{args, "[no reason provided]"};}
     }
 
     public static String[] splitWithReasonAndTime(int limit, String args, String regex)
@@ -337,10 +335,7 @@ public class ArgsUtils
             String[] argsArr = args.split(regex, limit);
             return new String[]{argsArr[0], argsArr[1]};
         }
-        catch(IndexOutOfBoundsException e)
-        {
-            return new String[]{args, ""};
-        }
+        catch(IndexOutOfBoundsException e) {return new String[]{args, ""};}
     }
 
     public static Map<String, String> parseArgs(String[] flags, String[] args)

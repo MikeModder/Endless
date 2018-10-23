@@ -311,7 +311,7 @@ public class ModLogging
         if(!(bot.dataEnabled))
             return -1;
 
-        TextChannel modlog = GuildUtils.getModlogChannel(guild);
+        TextChannel modlog = guild.getTextChannelById(bot.endless.getGuildSettings(guild).getModlog());
         if(modlog==null)
             return -1;
         else if(!(modlog.canTalk()) || !(ChecksUtil.hasPermission(guild.getSelfMember(), modlog, Permission.MESSAGE_HISTORY)))

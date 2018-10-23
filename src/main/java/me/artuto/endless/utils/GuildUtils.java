@@ -86,12 +86,6 @@ public class GuildUtils
                 .stream().findFirst().orElse(guild.getRoleById(bot.endless.getGuildSettings(guild).getMutedRole()));
     }
 
-    public static TextChannel getModlogChannel(Guild guild)
-    {
-        GuildSettings settings = bot.endless.getGuildSettings(guild);
-        return guild.getTextChannelById(settings.getModlog());
-    }
-
     public static TextChannel getStarboardChannel(Guild guild)
     {
         GuildSettings settings = bot.endless.getGuildSettings(guild);

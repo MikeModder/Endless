@@ -98,13 +98,13 @@ public class AfkManager
             return;
 
         if(getMessage(user.getIdLong())==null)
-            event.getChannel().sendMessage(":bed: **"+user.getName()+"** is AFK!").queue();
+            event.getChannel().sendMessage(":bed: "+Bot.getInstance().localize(event.getGuild(), "core.afk", user.getName())).queue();
         else
         {
             builder.setDescription(AfkManager.getMessage(user.getIdLong()));
             builder.setColor(event.getGuild().getMember(user).getColor());
 
-            event.getChannel().sendMessage(new MessageBuilder().append(":bed: **").append(user.getName()).append("** is AFK!")
+            event.getChannel().sendMessage(new MessageBuilder().setContent(":bed: "+Bot.getInstance().localize(event.getGuild(), "core.afk", user.getName()))
                     .setEmbed(builder.build()).build()).queue();
         }
     }

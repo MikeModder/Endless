@@ -103,7 +103,7 @@ public class UserInfoCmd extends EndlessCommand
                 String roles = member.getRoles().isEmpty()?"":member.getRoles().stream().map(IMentionable::getAsMention)
                         .collect(Collectors.joining(", "));
                 if(!(roles.isEmpty()))
-                    sb.append(Const.LINE_START).append(" ").append(event.localize("command.user.roles")).append(": **").append(roles).append("\n");
+                    sb.append(Const.LINE_START).append(" ").append(event.localize("command.user.roles")).append(": ").append(roles).append("\n");
                 sb.append(Const.LINE_START).append(" ").append(event.localize("command.user.joinDate")).append(": **")
                         .append(member.getJoinDate().format(DateTimeFormatter.RFC_1123_DATE_TIME)).append("**\n");
                 sb.append(Const.LINE_START).append(" ").append(event.localize("command.user.creationDate")).append(": **")

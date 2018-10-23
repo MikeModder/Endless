@@ -55,7 +55,7 @@ public class BotLogging
 
             String msg = FormatUtil.sanitize(":inbox_tray: `[Joined Guild]:` ```diff\n+"+guildName+
                     " (ID: "+guild.getId()+")```\n"+
-                    "`[Owner]:` **"+ownerName+"** (ID: "+owner.getId()+"\n"+
+                    "`[Owner]:` **"+ownerName+"** (ID: "+owner.getId()+")\n"+
                     "`[Members]:` Humans: **"+userCount+"** Bots: **"+botCount+"** Total Count: **"+totalCount+"**");
             bot.logWebhook.send(msg);
         }
@@ -77,7 +77,7 @@ public class BotLogging
 
             String msg = FormatUtil.sanitize(":outbox_tray: `[Left Guild]:` ```diff\n-"+guildName+
                     " (ID: "+guild.getId()+")```\n"+
-                    "`[Owner]:` **"+ownerName+"** (ID: "+owner.getId()+"\n"+
+                    "`[Owner]:` **"+ownerName+"** (ID: "+owner.getId()+")\n"+
                     "`[Members]:` Humans: **"+userCount+"** Bots: **"+botCount+"** Total Count: **"+totalCount+"**");
             bot.logWebhook.send(msg);
         }

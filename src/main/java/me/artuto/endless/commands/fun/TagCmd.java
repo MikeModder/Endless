@@ -487,7 +487,7 @@ public class TagCmd extends EndlessCommand
                     user = event.getAuthor();
                 else
                 {
-                    user = searchUser(event);
+                    user = ArgsUtils.findUser(false, event, event.getArgs());
                     if(user==null)
                         return;
                 }
@@ -538,56 +538,6 @@ public class TagCmd extends EndlessCommand
                     return;
                 }
                 event.reply(false, sb.toString());
-            }
-        }
-
-        private User searchUser(CommandEvent event)
-        {
-            if(event.isFromType(ChannelType.TEXT))
-            {
-                java.util.List<Member> members = FinderUtil.findMembers(event.getArgs(), event.getGuild());
-
-                if(members.isEmpty())
-                {
-                    java.util.List<User> users = FinderUtil.findUsers(event.getArgs(), event.getJDA());
-
-                    if(users.isEmpty())
-                    {
-                        event.replyWarning("I was not able to found a user with the provided arguments: '"+event.getArgs()+"'");
-                        return null;
-                    }
-                    else if(users.size()>1)
-                    {
-                        event.replyWarning(FormatUtil.listOfUsers(users, event.getArgs()));
-                        return null;
-                    }
-                    else
-                        return users.get(0);
-                }
-                else if(members.size()>1)
-                {
-                    event.replyWarning(FormatUtil.listOfMembers(members, event.getArgs()));
-                    return null;
-                }
-                else
-                    return members.get(0).getUser();
-            }
-            else
-            {
-                java.util.List<User> users = FinderUtil.findUsers(event.getArgs(), event.getJDA());
-
-                if(users.isEmpty())
-                {
-                    event.replyWarning("I was not able to found a user with the provided arguments: '"+event.getArgs()+"'");
-                    return null;
-                }
-                else if(users.size()>1)
-                {
-                    event.replyWarning(FormatUtil.listOfUsers(users, event.getArgs()));
-                    return null;
-                }
-                else
-                    return users.get(0);
             }
         }
     }

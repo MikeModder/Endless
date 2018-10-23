@@ -126,7 +126,8 @@ public class FormatUtil
         return (hours>0 ? hours+":" : "") + (minutes<10 ? "0"+minutes : minutes) + ":" + (seconds<10 ? "0"+seconds : seconds);
     }
 
-    public static String formatLogClean(String message, OffsetDateTime now, ZoneId tz, int caseId, String emote, String aN, String aD, String verb, int number, long tcId, String crit, String reason)
+    public static String formatLogClean(String message, OffsetDateTime now, ZoneId tz, int caseId, String emote, String aN,
+                                        String aD, String verb, int number, long tcId, String crit, String reason)
     {
         Matcher m = MENTION.matcher(crit);
         while(m.find())
@@ -134,76 +135,92 @@ public class FormatUtil
         return sanitize(String.format(message, timeF(now, tz), caseId, emote, aN, aD, verb, number, tcId, crit, reason));
     }
 
-    public static String formatLogGeneral(String message, OffsetDateTime now, ZoneId tz, int caseId, String emote, String aN, String aD, String verb, String tN, String tD, long tId, String reason)
+    public static String formatLogGeneral(String message, OffsetDateTime now, ZoneId tz, int caseId, String emote, String aN,
+                                          String aD, String verb, String tN, String tD, long tId, String reason)
     {
         return String.format(message, timeF(now, tz), caseId, emote, aN, aD, verb, tN, tD, tId, reason);
     }
 
-    public static String formatLogTemp(String message, OffsetDateTime now, ZoneId tz, int caseId, String expT, String emote, String aN, String aD, String verb, String tN, String tD, long tId, String reason)
+    public static String formatLogTemp(String message, OffsetDateTime now, ZoneId tz, int caseId, String expT, String emote,
+                                       String aN, String aD, String verb, String tN, String tD, long tId, String reason)
     {
         return String.format(message, timeF(now, tz), caseId, emote, aN, aD, verb, tN, tD, tId, reason, expT);
     }
 
-    public static String listOfCategories(List<Category> list, String query)
+    static String listOfCategories(EndlessCommandEvent event, List<Category> list, String query)
     {
-        String out = " Multiple categories found matching \""+query+"\":";
+        String out = event.localize("core.finder.multiple.categories", query)+":";
         for(int i = 0; i<6 && i<list.size(); i++)
             out += "\n - "+list.get(i).getName()+" (ID:"+list.get(i).getId()+")";
-        if(list.size()>6) out += "\n**And "+(list.size()-6)+" more...**";
+        if(list.size()>6)
+            out += "\n"+event.localize("core.finder.multiple.moreThanSix", list.size()-6);
+
         return out;
     }
 
-    public static String listOfEmotes(List<Emote> list, String query)
+    public static String listOfEmotes(EndlessCommandEvent event, List<Emote> list, String query)
     {
-        String out = " Multiple emotes found matching \""+query+"\":";
+        String out = event.localize("core.finder.multiple.emotes", query)+":";
         for(int i = 0; i<6 && i<list.size(); i++)
             out += "\n"+list.get(i).getAsMention()+" - "+list.get(i).getName()+" (ID:"+list.get(i).getId()+")";
-        if(list.size()>6) out += "\n**And "+(list.size()-6)+" more...**";
+        if(list.size()>6)
+            out += "\n"+event.localize("core.finder.multiple.moreThanSix", list.size()-6);
+
         return out;
     }
 
-    public static String listOfMembers(List<Member> list, String query)
+    public static String listOfMembers(EndlessCommandEvent event, List<Member> list, String query)
     {
-        String out = " Multiple members found matching \""+query+"\":";
+        String out = event.localize("core.finder.multiple.members", query)+":";
         for(int i = 0; i<6 && i<list.size(); i++)
             out += "\n - "+list.get(i).getUser().getName()+"#"+list.get(i).getUser().getDiscriminator()+" (ID:"+list.get(i).getUser().getId()+")";
-        if(list.size()>6) out += "\n**And "+(list.size()-6)+" more...**";
+        if(list.size()>6)
+            out += "\n"+event.localize("core.finder.multiple.moreThanSix", list.size()-6);
+
         return out;
     }
 
-    public static String listOfUsers(List<User> list, String query)
+    public static String listOfUsers(EndlessCommandEvent event, List<User> list, String query)
     {
-        String out = " Multiple users found matching \""+query+"\":";
+        String out = event.localize("core.finder.multiple.users", query)+":";
         for(int i = 0; i<6 && i<list.size(); i++)
             out += "\n - "+list.get(i).getName()+"#"+list.get(i).getDiscriminator()+" (ID:"+list.get(i).getId()+")";
-        if(list.size()>6) out += "\n**And "+(list.size()-6)+" more...**";
+        if(list.size()>6)
+            out += "\n"+event.localize("core.finder.multiple.moreThanSix", list.size()-6);
+
         return out;
     }
 
-    public static String listOfRoles(List<Role> list, String query)
+    static String listOfRoles(EndlessCommandEvent event, List<Role> list, String query)
     {
-        String out = " Multiple roles found matching \""+query+"\":";
+        String out = event.localize("core.finder.multiple.roles", query)+":";
         for(int i = 0; i<6 && i<list.size(); i++)
             out += "\n - "+list.get(i).getName()+" (ID:"+list.get(i).getId()+")";
-        if(list.size()>6) out += "\n**And "+(list.size()-6)+" more...**";
+        if(list.size()>6)
+            out += "\n"+event.localize("core.finder.multiple.moreThanSix", list.size()-6);
+
         return out;
     }
 
-    public static String listOfTcChannels(List<TextChannel> list, String query)
+    static String listOfTcChannels(EndlessCommandEvent event, List<TextChannel> list, String query)
     {
-        String out = " Multiple text channels found matching \""+query+"\":";
+        String out = event.localize("core.finder.multiple.tc", query)+":";
         for(int i = 0; i<6 && i<list.size(); i++)
             out += "\n - "+list.get(i).getName()+" (ID:"+list.get(i).getId()+")";
-        if(list.size()>6) out += "\n**And "+(list.size()-6)+" more...**";
+        if(list.size()>6)
+            out += "\n"+event.localize("core.finder.multiple.moreThanSix", list.size()-6);
+
         return out;
     }
 
-    public static String listOfVcChannels(List<VoiceChannel> list, String query)
+    static String listOfVcChannels(EndlessCommandEvent event, List<VoiceChannel> list, String query)
     {
-        String out = " Multiple voice channels found matching \""+query+"\":";
+        String out = event.localize("core.finder.multiple.vc", query)+":";
         for(int i = 0; i<6 && i<list.size(); i++)
             out += "\n - "+list.get(i).getName()+" (ID:"+list.get(i).getId()+")";
-        if(list.size()>6) out += "\n**And "+(list.size()-6)+" more...**";
+        if(list.size()>6)
+            out += "\n"+event.localize("core.finder.multiple.moreThanSix", list.size()-6);
+
         return out;
     }
 

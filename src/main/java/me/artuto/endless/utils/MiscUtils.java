@@ -69,41 +69,6 @@ public class MiscUtils
         }
     }
 
-    public static StringBuilder getStackTrace(ILoggingEvent event)
-    {
-        IThrowableProxy proxy = event.getThrowableProxy();
-        ThrowableProxy throwableImpl = (ThrowableProxy)proxy;
-        StringBuilder stacktrace = new StringBuilder(event.getFormattedMessage());
-
-        if(!(proxy==null))
-        {
-            Throwable throwable = throwableImpl.getThrowable();
-
-            List<StackTraceElementProxy> list = Arrays.asList(proxy.getStackTraceElementProxyArray());
-            String message = proxy.getMessage();
-            if(!(message==null))
-            {
-                stacktrace.append("\n\n```java\n");
-                if(!(throwable==null))
-                    stacktrace.append(throwable.getClass().getName()).append(": ");
-                stacktrace.append(message);
-            }
-            for(StackTraceElementProxy element : list)
-            {
-                String call = element.getSTEAsString();
-                if(call.length()+stacktrace.length()>MessageEmbed.TEXT_MAX_LENGTH)
-                {
-                    stacktrace.append("\n... (").append(list.size()-list.indexOf(element)+1).append(" more calls)");
-                    break;
-                }
-                stacktrace.append("\n").append(call).append("\n");
-            }
-            stacktrace.append("```");
-        }
-
-        return stacktrace;
-    }
-
     public static String getImageUrl(String format, String size, String url)
     {
         if(url==null)

@@ -17,13 +17,13 @@
 
 package me.artuto.endless.libraries;
 
+import com.jagrosh.jagtag.Environment;
 import com.jagrosh.jagtag.Method;
 import com.jagrosh.jagtag.ParseException;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import me.artuto.endless.Bot;
 import me.artuto.endless.Const;
-import me.artuto.endless.utils.FormatUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -61,7 +61,7 @@ public class JagTag
                         return findMember(guild, in[0]).getUser().getName();
                     User user = env.get("user");
                     JDA jda = user.getJDA();
-                    return findUser(jda, in[0]).getName();
+                    return findUser(jda, in[0], env).getName();
                 }),
                 new Method("nick", (env) -> {
                     User user = env.get("user");
@@ -81,7 +81,7 @@ public class JagTag
                         return findMember(guild, in[0]).getEffectiveName();
                     User user = env.get("user");
                     JDA jda = user.getJDA();
-                    return findUser(jda, in[0]).getName();
+                    return findUser(jda, in[0], env).getName();
                 }),
                 new Method("discrim", (env) -> {
                     User user = env.get("user");
@@ -94,7 +94,7 @@ public class JagTag
                         return findMember(guild, in[0]).getUser().getDiscriminator();
                     User user = env.get("user");
                     JDA jda = user.getJDA();
-                    return findUser(jda, in[0]).getDiscriminator();
+                    return findUser(jda, in[0], env).getDiscriminator();
                 }),
                 new Method("userid", (env) -> {
                     User user = env.get("user");
@@ -111,7 +111,7 @@ public class JagTag
                         return findMember(guild, in[0]).getUser().getAsMention();
                     User user = env.get("user");
                     JDA jda = user.getJDA();
-                    return findUser(jda, in[0]).getAsMention();
+                    return findUser(jda, in[0], env).getAsMention();
                 }),
                 new Method("avatar", (env) -> {
                     User user = env.get("user");
@@ -124,7 +124,7 @@ public class JagTag
                         return findMember(guild, in[0]).getUser().getEffectiveAvatarUrl();
                     User user = env.get("user");
                     JDA jda = user.getJDA();
-                    return findUser(jda, in[0]).getEffectiveAvatarUrl();
+                    return findUser(jda, in[0], env).getEffectiveAvatarUrl();
                 }),
                 // Guild
                 new Method("server", (env) -> {
@@ -181,8 +181,8 @@ public class JagTag
                     String[] parts = in[0].split("\\|",2);
                     String title = parts[0];
                     String url = parts.length>1?parts[1]:null;
-                    checkTitle(title);
-                    checkUrl(url, false);
+                    checkTitle(title, env);
+                    checkUrl(url, false, env);
                     eb.setTitle(title, url);
                     return "";
                 }),
@@ -192,39 +192,41 @@ public class JagTag
                     String author = parts[0];
                     String url = parts.length>2?parts[2]:null;
                     String image = parts.length>1?parts[1]:null;
-                    checkText(author);
-                    checkUrl(url, false);
-                    checkUrl(image, true);
+                    checkText(author, env);
+                    checkUrl(url, false, env);
+                    checkUrl(image, true, env);
                     eb.setAuthor(author, url, image);
                     return "";
                 }),
                 new Method("thumbnail", (env, in) -> {
                     EmbedBuilder eb = env.get("builder");
-                    checkUrl(in[0], true);
+                    checkUrl(in[0], true, env);
                     eb.setThumbnail(in[0]);
                     return "";
                 }),
                 new Method("field", (env, in) -> {
                     EmbedBuilder eb = env.get("builder");
+                    Guild guild = env.get("guild");
                     String[] parts = in[0].split("\\|",3);
                     if(parts.length<2)
-                        throw new ParseException("Please specify a field name and content!");
+                        throw new ParseException(Bot.getInstance().localize(guild, "core.jagtag.embed.field"));
                     String title = parts[0];
                     String value = parts[1];
                     boolean inline = parts.length>2?parts[2].equalsIgnoreCase("true"):true;
-                    checkTitle(title);
-                    checkField(value);
+                    checkTitle(title, env);
+                    checkField(value, env);
                     eb.addField(title, value, inline);
                     return "";
                 }),
                 new Method("image", (env, in) -> {
                     EmbedBuilder eb = env.get("builder");
-                    checkUrl(in[0], true);
+                    checkUrl(in[0], true, env);
                     eb.setImage(in[0]);
                     return "";
                 }),
                 new Method("color", (env, in) -> {
                     EmbedBuilder eb = env.get("builder");
+                    Guild guild = env.get("guild");
                     switch(in[0].toLowerCase()) {
                         //standard
                         case "red": eb.setColor(Color.RED); break;
@@ -250,14 +252,14 @@ public class JagTag
                         default:
                             Color color;
                             try {color = Color.decode(in[0]);}
-                            catch(NumberFormatException ignored) {throw new ParseException("Could not parse the specified color code!");}
+                            catch(NumberFormatException ignored) {throw new ParseException(Bot.getInstance().localize(guild, "core.jagtag.embed.color"));}
                             eb.setColor(color);
                     }
                     return "";
                 }),
                 new Method("description", (env, in) -> {
                     EmbedBuilder eb = env.get("builder");
-                    checkText(in[0]);
+                    checkText(in[0], env);
                     eb.setDescription(in[0]);
                     return "";
                 }),
@@ -266,8 +268,8 @@ public class JagTag
                     String[] parts = in[0].split("\\|",2);
                     String title = parts[0];
                     String icon = parts.length>1?parts[1]:null;
-                    checkTitle(title);
-                    checkUrl(icon, true);
+                    checkTitle(title, env);
+                    checkUrl(icon, true, env);
                     eb.setFooter(title, icon);
                     return "";
                 }),
@@ -277,9 +279,10 @@ public class JagTag
                     return "";
                     }, (env, in) -> {
                     EmbedBuilder eb = env.get("builder");
+                    Guild guild = env.get("guild");
                     OffsetDateTime time;
                     try {time = OffsetDateTime.parse(in[0]);}
-                    catch(DateTimeParseException ignored) {throw new ParseException("Could not parse the specified timestamp!");}
+                    catch(DateTimeParseException ignored) {throw new ParseException(Bot.getInstance().localize(guild, "core.jagtag.embed.time"));}
                     eb.setTimestamp(time);
                     return "";
                 }),
@@ -305,7 +308,7 @@ public class JagTag
                             return client.getWarning();
                         default:
                             User u = env.get("user");
-                            return findEmote(u.getJDA(), args).getAsMention();
+                            return findEmote(u.getJDA(), args, env).getAsMention();
                     }
                 }),
                 // Repeat
@@ -326,15 +329,14 @@ public class JagTag
                 }));
     }
 
-    private static Emote findEmote(JDA jda, String query) throws ParseException
+    private static Emote findEmote(JDA jda, String query, Environment env) throws ParseException
     {
         CommandClient client = Bot.getInstance().client;
+        Guild guild = env.get("guild");
         List<Emote> list = FinderUtil.findEmotes(query, jda);
 
         if(list.isEmpty())
-            throw new ParseException(String.format("%s I was not able to found an emote with the provided arguments: '%s'", client.getWarning(), query));
-        else if(list.size()>1)
-            throw new ParseException(String.format("%s %s", client.getWarning(), FormatUtil.listOfEmotes(list, query)));
+            throw new ParseException(String.format("%s %s", client.getWarning(), Bot.getInstance().localize(guild, "core.finder.empty.emote", query)));
         else
             return list.get(0);
     }
@@ -345,52 +347,53 @@ public class JagTag
         List<Member> list = FinderUtil.findMembers(query, guild);
 
         if(list.isEmpty())
-            throw new ParseException(String.format("%s I was not able to found a member with the provided arguments: '%s'", client.getWarning(), query));
-        else if(list.size()>1)
-            throw new ParseException(String.format("%s %s", client.getWarning(), FormatUtil.listOfMembers(list, query)));
+            throw new ParseException(String.format("%s %s", client.getWarning(), Bot.getInstance().localize(guild, "core.finder.empty.member", query)));
         else
             return list.get(0);
     }
 
-    private static User findUser(JDA jda, String query) throws ParseException
+    private static User findUser(JDA jda, String query, Environment env) throws ParseException
     {
         CommandClient client = Bot.getInstance().client;
+        Guild guild = env.get("guild");
         List<User> list = FinderUtil.findUsers(query, jda);
 
         if(list.isEmpty())
-            throw new ParseException(String.format("%s I was not able to found a user with the provided arguments: '%s'", client.getWarning(), query));
-        else if(list.size()>1)
-            throw new ParseException(String.format("%s %s", client.getWarning(), FormatUtil.listOfUsers(list, query)));
+            throw new ParseException(String.format("%s %s", client.getWarning(), Bot.getInstance().localize(guild, "core.finder.empty.user", query)));
         else
             return list.get(0);
     }
 
-    private static void checkUrl(@Nullable String url, boolean image) throws ParseException
+    private static void checkUrl(@Nullable String url, boolean image, Environment env) throws ParseException
     {
+        Guild guild = env.get("guild");
         if(url==null)
             return;
         if(url.length()>MessageEmbed.URL_MAX_LENGTH)
-            throw new ParseException("The specified "+(image?"image url":"url")+" is too long!");
+            throw new ParseException(Bot.getInstance().localize(guild, "core.jagtag.embed.tooLong."+(image?"imageUrl":"url")));
         Matcher m = EmbedBuilder.URL_PATTERN.matcher(url);
         if(!(m.matches()))
-            throw new ParseException("The specified "+(image?"image url":"url")+" is not valid!");
+            throw new ParseException(Bot.getInstance().localize(guild, "core.jagtag.embed.invalid."+(image?"imageUrl":"url")));
     }
 
-    private static void checkText(String text) throws ParseException
+    private static void checkText(String text, Environment env) throws ParseException
     {
+        Guild guild = env.get("guild");
         if(text.length()>MessageEmbed.TEXT_MAX_LENGTH)
-            throw new ParseException("The specified description is too long!");
+            throw new ParseException(Bot.getInstance().localize(guild, "core.jagtag.embed.tooLong.description"));
     }
 
-    private static void checkField(String text) throws ParseException
+    private static void checkField(String text, Environment env) throws ParseException
     {
+        Guild guild = env.get("guild");
         if(text.length()>MessageEmbed.VALUE_MAX_LENGTH)
-            throw new ParseException("One of the specified field value is too long!");
+            throw new ParseException(Bot.getInstance().localize(guild, "core.jagtag.embed.tooLong.field"));
     }
 
-    private static void checkTitle(String text) throws ParseException
+    private static void checkTitle(String text, Environment env) throws ParseException
     {
+        Guild guild = env.get("guild");
         if(text.length()>MessageEmbed.TITLE_MAX_LENGTH)
-            throw new ParseException("The specified title is too long!");
+            throw new ParseException(Bot.getInstance().localize(guild, "core.jagtag.embed.tooLong.title"));
     }
 }

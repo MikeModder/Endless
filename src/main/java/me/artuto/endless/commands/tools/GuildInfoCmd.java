@@ -87,7 +87,7 @@ public class GuildInfoCmd extends EndlessCommand
                 .append(guild.getRegion().getEmoji()).append("**\n");
         sb.append(Const.LINE_START).append(" ").append(event.localize("command.guild.creation")).append(" **")
                 .append(guild.getCreationTime().format(DateTimeFormatter.RFC_1123_DATE_TIME)).append("**\n");
-        sb.append(Const.LINE_START).append(" ").append(event.localize("command.guild.members")).append(" **").append(Const.ONLINE).append(" **")
+        sb.append(Const.LINE_START).append(" ").append(event.localize("command.guild.members")).append(" ").append(Const.ONLINE).append(" **")
                 .append(onlineCount).append("** - ").append(Const.IDLE).append(" **").append(idleCount).append("** - ").append(Const.DND).append(" **")
                 .append(dndCount).append("** - ").append(Const.OFFLINE).append(" **").append(offlineCount).append("** (**").append(memberCount).append("**, ")
                 .append(Const.BOT).append(" **").append(botCount).append("**)\n");

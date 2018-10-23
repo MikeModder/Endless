@@ -17,11 +17,13 @@
 
 package me.artuto.endless.handlers;
 
+import me.artuto.endless.Bot;
 import me.artuto.endless.core.entities.Poll;
 import me.artuto.endless.utils.ChecksUtil;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -47,15 +49,17 @@ public class PollHandler
             return;
         if(!(tc.canTalk()))
             return;
+
         tc.getMessageById(poll.getMessageId()).queue(msg -> {
             EmbedBuilder builder = new EmbedBuilder();
+            Guild guild = msg.getGuild();
             MessageEmbed embed = msg.getEmbeds().get(0);
             StringBuilder sb = new StringBuilder();
             builder.setColor(embed.getColor());
 
             builder.setTitle(embed.getTitle());
             if(msg.getReactions().isEmpty())
-                sb.append("I couldn't determine a winner option for this poll.");
+                sb.append(Bot.getInstance().localize(guild, "core.poll.unable"));
             else
             {
                 List<Integer> counts = new ArrayList<>();
@@ -66,10 +70,10 @@ public class PollHandler
                     totalCount += re;
                 List<MessageReaction> winners = msg.getReactions().stream()
                         .filter(r -> (r.isSelf()?(r.getCount()-1)==max:r.getCount()==max)).collect(Collectors.toList());
-                sb.append("Time is over! ");
+                sb.append(Bot.getInstance().localize(guild, "core.poll.over"));
                 if(winners.size()>1)
                 {
-                    sb.append("\nThere was a tie between **").append(winners.size()).append("** options!\n_ _\n");
+                    sb.append("\n").append(Bot.getInstance().localize(guild, "core.poll.tie", winners.size())).append(winners.size()).append("\n_ _\n");
                     winners.forEach(re -> {
                         MessageReaction.ReactionEmote reactionEmote = re.getReactionEmote();
                         sb.append(reactionEmote.isEmote()?reactionEmote.getEmote().getAsMention():reactionEmote.getName()).append("  ");
@@ -77,10 +81,10 @@ public class PollHandler
                 }
                 else
                 {
-                    sb.append("A total of **").append(totalCount).append("** people voted!\n");
+                    sb.append(Bot.getInstance().localize(guild, "core.poll.total", totalCount)).append("\n");
                     MessageReaction re = winners.get(0);
                     MessageReaction.ReactionEmote reactionEmote = re.getReactionEmote();
-                    sb.append("The winner, with **").append(re.isSelf()?(re.getCount()-1):re.getCount()).append("** votes, is...\n_ _\n");
+                    sb.append(Bot.getInstance().localize(guild, "core.poll.winner", re.isSelf()?(re.getCount()-1):re.getCount())).append("\n_ _\n");
                     sb.append(reactionEmote.isEmote()?reactionEmote.getEmote().getAsMention():reactionEmote.getName());
                 }
             }

@@ -59,7 +59,9 @@ import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.StatusChangeEvent;
@@ -77,6 +79,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -347,6 +350,19 @@ public class Bot extends ListenerAdapter
                 sendStats(event.getJDA());
             }
         }
+    }
+
+    public String localize(Guild guild, String t, Object... args)
+    {
+        if(guild==null)
+            t = MessageFormat.format(Locale.EN_US.getBundle().getString(t), args);
+        else
+        {
+            GuildSettings gs = this.client.getSettingsFor(guild);
+            t = MessageFormat.format(gs.getLocale().getBundle().getString(t), args);
+        }
+
+        return t;
     }
 
     void sendStats(JDA jda)

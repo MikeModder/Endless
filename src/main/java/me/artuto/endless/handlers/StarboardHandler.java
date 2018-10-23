@@ -81,9 +81,9 @@ public class StarboardHandler
 
             if(!(starboard.canTalk()))
             {
-                FinderUtil.getDefaultChannel(guild).sendMessage("I can't talk on the starboard!").queue(null,
-                        e -> guild.getOwner().getUser().openPrivateChannel().queue(s -> s.sendMessage("I can't talk on the starboard!")
-                                .queue(null, null)));
+                String t = Bot.getInstance().localize(guild, "core.starboard.cantTalk");
+                FinderUtil.getDefaultChannel(guild).sendMessage(t).queue(null,
+                        e -> guild.getOwner().getUser().openPrivateChannel().queue(s -> s.sendMessage(t).queue(null, e2 -> {})));
                 return;
             }
 

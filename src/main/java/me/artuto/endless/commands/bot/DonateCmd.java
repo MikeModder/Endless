@@ -24,6 +24,7 @@ import me.artuto.endless.Const;
 import me.artuto.endless.commands.EndlessCommand;
 import me.artuto.endless.commands.EndlessCommandEvent;
 import me.artuto.endless.commands.cmddata.Categories;
+import me.artuto.endless.utils.ArgsUtils;
 import me.artuto.endless.utils.FormatUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -125,24 +126,12 @@ public class DonateCmd extends EndlessCommand
                 return;
             }
 
-            List<Member> list = FinderUtil.findMembers(id, event.getGuild());
+            user = ArgsUtils.findUser(true, event, id);
+            if(user==null)
+                return;
 
-            if(list.isEmpty())
-            {
-                event.getJDA().retrieveUserById(id).queue(s ->
-                {
-                    bot.ddm.setDonation(s.getIdLong(), donation);
-                    event.replySuccess(false, String.format("Successfully added %#s to the donators list!", s));
-                }, e -> event.replyError(false, "Invalid ID!"));
-            }
-            else if(list.size()>1)
-                event.replyWarning(FormatUtil.listOfMembers(list, id));
-            else
-            {
-                user = list.get(0).getUser();
-                bot.ddm.setDonation(user.getIdLong(), donation);
-                event.replySuccess(false, String.format("Successfully added %#s to the donators list!", user));
-            }
+            bot.ddm.setDonation(user.getIdLong(), donation);
+            event.replySuccess(false, String.format("Successfully added %#s to the donators list!", user));
         }
     }
 
@@ -173,41 +162,19 @@ public class DonateCmd extends EndlessCommand
                 return;
             }
 
-            User user;
-            List<Member> list = FinderUtil.findMembers(event.getArgs(), event.getGuild());
+            User user = ArgsUtils.findUser(true, event, event.getArgs());
+            if(user==null)
+                return;
 
-            if(list.isEmpty())
+            if(!(bot.ddm.hasDonated(user)))
             {
-                event.getJDA().retrieveUserById(event.getArgs()).queue(s ->
-                {
-                    if(!(bot.ddm.hasDonated(s)))
-                    {
-                        bot.ddm.setDonation(s.getIdLong(), null);
-                        event.replyError(false, "This user hasn't donated!");
-                    }
-                    else
-                    {
-                        bot.ddm.setDonation(s.getIdLong(), null);
-                        event.replySuccess(false, String.format("Successfully removed %#s from the donators list!", s));
-                    }
-                }, e -> event.replyError(false, "Invalid ID!"));
+                bot.ddm.setDonation(user.getIdLong(), null);
+                event.replyError(false, "This user hasn't donated!");
             }
-            else if(list.size()>1)
-                event.replyWarning(FormatUtil.listOfMembers(list, event.getArgs()));
             else
             {
-                user = list.get(0).getUser();
-
-                if(!(bot.ddm.hasDonated(user)))
-                {
-                    bot.ddm.setDonation(user.getIdLong(), null);
-                    event.replyError(false, "This user hasn't donated!");
-                }
-                else
-                {
-                    bot.ddm.setDonation(user.getIdLong(), null);
-                    event.replySuccess(false, String.format("Successfully removed %#s from the donators list!", user));
-                }
+                bot.ddm.setDonation(user.getIdLong(), null);
+                event.replySuccess(false, String.format("Successfully removed %#s from the donators list!", user));
             }
         }
     }
