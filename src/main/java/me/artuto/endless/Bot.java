@@ -40,6 +40,7 @@ import me.artuto.endless.commands.tools.*;
 import me.artuto.endless.commands.utils.*;
 import me.artuto.endless.core.EndlessCore;
 import me.artuto.endless.core.EndlessCoreBuilder;
+import me.artuto.endless.core.entities.GuildSettings;
 import me.artuto.endless.core.entities.PunishmentType;
 import me.artuto.endless.core.exceptions.ConfigException;
 import me.artuto.endless.handlers.BlacklistHandler;
@@ -76,6 +77,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -340,6 +342,7 @@ public class Bot extends ListenerAdapter
                     reminderScheduler.scheduleWithFixedDelay(() -> rdm.updateReminders(shardManager), 0, 1, TimeUnit.SECONDS);
                 }
                 endlessPool.schedule(() -> db.toDelete.forEach(g -> db.deleteSettings(g)), 24, TimeUnit.HOURS);
+                endlessPool.scheduleWithFixedDelay(this::leavePointlessGuilds, 5, 30, TimeUnit.MINUTES);
                 optimizerScheduler.scheduleWithFixedDelay(System::gc, 5, 30, TimeUnit.MINUTES);
                 sendStats(event.getJDA());
             }
@@ -427,5 +430,23 @@ public class Bot extends ListenerAdapter
         else
             presence.setPresence(OnlineStatus.DO_NOT_DISTURB, Game.playing("Maintenance mode enabled | Shard "
                     +(shardInfo.getShardId()+1)));
+    }
+
+    private void leavePointlessGuilds()
+    {
+        shardManager.getGuilds().stream().filter(g ->
+        {
+            if(!(g.isAvailable()))
+                return false;
+            if(g.getOwnerIdLong()==config.getOwnerId() || Arrays.asList(config.getCoOwnerIds()).contains(g.getOwnerIdLong()))
+                return false;
+            long botcount = g.getMembers().stream().filter(m -> m.getUser().isBot()).count();
+            if(g.getMembers().size()-botcount<10 || (botcount>20 && ((double)botcount/g.getMemberCache().size())>0.65))
+            {
+                GuildSettings gs = endless.getGuildSettings(g);
+                return !(gs==null) && !(gs.isDefault());
+            }
+            return false;
+        }).forEach(g -> g.leave().queue());
     }
 }
