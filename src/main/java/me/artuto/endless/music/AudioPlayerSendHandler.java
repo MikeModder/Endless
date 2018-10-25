@@ -87,7 +87,7 @@ public class AudioPlayerSendHandler extends AudioEventAdapter implements AudioSe
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason reason)
     {
-        GuildSettings gs = bot.endless.getGuildSettings(guildId);
+        GuildSettings gs = bot.endless.getGuildSettingsById(guildId);
         if(reason==AudioTrackEndReason.FINISHED && gs.isRepeatModeEnabled())
         {
             if(isFairQueue())
@@ -134,7 +134,7 @@ public class AudioPlayerSendHandler extends AudioEventAdapter implements AudioSe
     boolean isFairQueue()
     {
         if(GuildUtils.isPremiumGuild(bot.shardManager.getGuildById(guildId)))
-            return bot.endless.getGuildSettings(guildId).isFairQueueEnabled();
+            return bot.endless.getGuildSettingsById(guildId).isFairQueueEnabled();
         else
             return true;
     }
