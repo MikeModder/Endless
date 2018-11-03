@@ -63,8 +63,8 @@ public class ServerSettingsCmd extends EndlessCommand
         // pre-localized strings
         String yes = event.localize("misc.yes");
         String no = event.localize("misc.no");
-        String none = event.localize("misc.none");
-        String disabled = event.localize("misc.disabled");
+        String none = " "+event.localize("misc.none");
+        String disabled = " "+event.localize("misc.disabled");
         String dontdel = event.localize("command.settings.value.bdd.dontDel");
 
         // titles
@@ -101,31 +101,31 @@ public class ServerSettingsCmd extends EndlessCommand
         StringBuilder starboardString = new StringBuilder();
         StringBuilder musicString = new StringBuilder();
 
-        logsString.append(event.localize("command.settings.value.modlog")).append((modlog==null?none:"**"+modlog.getAsMention()+"**"))
-                .append(event.localize("command.settings.value.serverlog")).append((serverlog==null?none:"**"+serverlog.getAsMention()+"**"))
-                .append(event.localize("command.settings.value.welcome")).append((welcome==null?none:"**"+welcome.getAsMention()+"**"))
-                .append(event.localize("command.settings.value.leave")).append((leave==null?none:"**"+leave.getAsMention()+"**"));
+        logsString.append(event.localize("command.settings.value.modlog")).append((modlog==null?none:" **"+modlog.getAsMention()+"**"))
+                .append(event.localize("command.settings.value.serverlog")).append((serverlog==null?none:" **"+serverlog.getAsMention()+"**"))
+                .append(event.localize("command.settings.value.welcome")).append((welcome==null?none:" **"+welcome.getAsMention()+"**"))
+                .append(event.localize("command.settings.value.leave")).append((leave==null?none:" **"+leave.getAsMention()+"**"));
 
-        messagesString.append(event.localize("command.settings.value.welcome.dm")).append((welcomeDm==null?none:"`"+welcomeDm+"`"))
-                .append(event.localize("command.settings.value.welcome.msg")).append((welcomeMsg==null?none:"`"+welcomeMsg+"`"))
-                .append(event.localize("command.settings.value.leave.msg")).append((leaveMsg==null?none:"`"+leaveMsg+"`"));
+        messagesString.append(event.localize("command.settings.value.welcome.dm")).append((welcomeDm==null?none:" `"+welcomeDm+"`"))
+                .append(event.localize("command.settings.value.welcome.msg")).append((welcomeMsg==null?none:" `"+welcomeMsg+"`"))
+                .append(event.localize("command.settings.value.leave.msg")).append((leaveMsg==null?none:" `"+leaveMsg+"`"));
 
-        settingsString.append(event.localize("command.settings.value.adminR")).append((adminRole==null?none:"**"+adminRole.getAsMention()+"**"))
-                .append(event.localize("command.settings.value.modR")).append((modRole==null?none:"**"+modRole.getAsMention()+"**"))
-                .append(event.localize("command.settings.value.mutedR")).append((mutedRole==null?none:"**"+mutedRole.getAsMention()+"**"))
-                .append(event.localize("command.settings.value.bdd")).append((banDeleteDays==0?dontdel:"**"+banDeleteDays+"**"))
+        settingsString.append(event.localize("command.settings.value.adminR")).append((adminRole==null?none:" **"+adminRole.getAsMention()+"**"))
+                .append(event.localize("command.settings.value.modR")).append((modRole==null?none:" **"+modRole.getAsMention()+"**"))
+                .append(event.localize("command.settings.value.mutedR")).append((mutedRole==null?none:" **"+mutedRole.getAsMention()+"**"))
+                .append(event.localize("command.settings.value.bdd")).append((banDeleteDays==0?dontdel:" **"+banDeleteDays+"**"))
                 .append(event.localize("command.settings.value.room")).append(" **").append(roomMode.getName()).append("**")
                 .append(event.localize("command.settings.value.tz")).append(" **").append(tz.toString()).append("**");
 
-        starboardString.append(event.localize("command.settings.value.starboard")).append((starboard==null?none:"**"+starboard.getAsMention()+"**"))
-                .append(event.localize("command.settings.value.starboard.count")).append((starboardCount==0?disabled:"**"+starboardCount+"**"))
-                .append(event.localize("command.settings.value.starboard.emote")).append(starboardEmote==null?
-                settings.getStarboardEmote():starboardEmote.getAsMention());
+        starboardString.append(event.localize("command.settings.value.starboard")).append((starboard==null?none:" **"+starboard.getAsMention()+"**"))
+                .append(event.localize("command.settings.value.starboard.count")).append((starboardCount==0?disabled:" **"+starboardCount+"**"))
+                .append(event.localize("command.settings.value.starboard.emote")).append(" "+(starboardEmote==null?
+                settings.getStarboardEmote():starboardEmote.getAsMention()));
 
-        musicString.append(event.localize("command.settings.value.music.djR")).append((djRole==null?none:"**"+djRole.getAsMention()+"**"))
-                .append(event.localize("command.settings.value.music.tc")).append((musicTc==null?none:"**"+musicTc.getAsMention()+"**"))
-                .append(event.localize("command.settings.value.music.vc")).append((musicVc==null?none:"**"+musicVc.getName()+"**"))
-                .append(event.localize("command.settings.value.music.fq")).append(fairQueue);
+        musicString.append(event.localize("command.settings.value.music.djR")).append((djRole==null?none:" **"+djRole.getAsMention()+"**"))
+                .append(event.localize("command.settings.value.music.tc")).append((musicTc==null?none:" **"+musicTc.getAsMention()+"**"))
+                .append(event.localize("command.settings.value.music.vc")).append((musicVc==null?none:" **"+musicVc.getName()+"**"))
+                .append(event.localize("command.settings.value.music.fq")).append(" ").append(fairQueue);
 
         builder.addField(":mag: "+logs, logsString.toString(), false);
         builder.addField(":speech_balloon: "+msgs, messagesString.toString(), false);
