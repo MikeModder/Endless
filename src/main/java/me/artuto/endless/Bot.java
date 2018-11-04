@@ -25,6 +25,7 @@ import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import io.sentry.Sentry;
 import me.artuto.endless.bootloader.StartupChecker;
 import me.artuto.endless.bootloader.ThreadLoader;
@@ -297,6 +298,7 @@ public class Bot extends ListenerAdapter
                 .setGame(Game.playing("[ENDLESS] Loading..."))
                 .setBulkDeleteSplittingEnabled(false)
                 .setEnableShutdownHook(true)
+                .setAudioSendFactory(new NativeAudioSendFactory())
                 .setSessionController(new SessionControllerAdapter(){
                     @Override
                     protected void runWorker()

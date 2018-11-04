@@ -148,7 +148,7 @@ public class RemindersDataManager
             if(channel==null)
                 channel = user.openPrivateChannel().complete();
             String toSend;
-            long until = reminder.getExpiryTime().until(now, ChronoUnit.SECONDS);
+            long until = ChronoUnit.SECONDS.between(now,  reminder.getExpiryTime());
             String formattedTime = FormatUtil.formatTimeFromSeconds(until);
             if(channel instanceof PrivateChannel)
                 toSend = ":alarm_clock: "+reminder.getMessage()+" ~set "+formattedTime+" ago";

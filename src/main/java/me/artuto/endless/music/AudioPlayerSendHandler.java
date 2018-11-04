@@ -44,7 +44,7 @@ public class AudioPlayerSendHandler extends AudioEventAdapter implements AudioSe
     private AudioFrame lastFrame;
     private final AudioPlayer player;
     private final Bot bot;
-    private final Guild guild;
+    private final long guildId;
 
     // Queues
     private final FairQueue<QueuedTrack> queue;
@@ -57,7 +57,7 @@ public class AudioPlayerSendHandler extends AudioEventAdapter implements AudioSe
     {
         this.player = player;
         this.bot = bot;
-        this.guild = guild;
+        this.guildId = guild.getIdLong();
 
         this.queue = new FairQueue<>();
         this.defQueue = new LinkedList<>();
@@ -87,7 +87,7 @@ public class AudioPlayerSendHandler extends AudioEventAdapter implements AudioSe
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason reason)
     {
-        GuildSettings gs = bot.endless.getGuildSettings(guild);
+        GuildSettings gs = bot.endless.getGuildSettingsById(guildId);
         if(reason==AudioTrackEndReason.FINISHED && gs.isRepeatModeEnabled())
         {
             if(isFairQueue())
@@ -97,7 +97,7 @@ public class AudioPlayerSendHandler extends AudioEventAdapter implements AudioSe
         }
         requester = 0;
         if(queue.isEmpty() && defQueue.isEmpty())
-            bot.endlessPool.submit(() -> guild.getAudioManager().closeAudioConnection());
+            bot.endlessPool.submit(() -> bot.shardManager.getGuildById(guildId).getAudioManager().closeAudioConnection());
         else
         {
             if(isFairQueue())
@@ -128,13 +128,13 @@ public class AudioPlayerSendHandler extends AudioEventAdapter implements AudioSe
 
     public boolean isMusicPlaying()
     {
-        return guild.getSelfMember().getVoiceState().inVoiceChannel() && !(player.getPlayingTrack()==null);
+        return bot.shardManager.getGuildById(guildId).getSelfMember().getVoiceState().inVoiceChannel() && !(player.getPlayingTrack()==null);
     }
 
     boolean isFairQueue()
     {
-        if(GuildUtils.isPremiumGuild(guild))
-            return bot.endless.getGuildSettings(guild).isFairQueueEnabled();
+        if(GuildUtils.isPremiumGuild(bot.shardManager.getGuildById(guildId)))
+            return bot.endless.getGuildSettingsById(guildId).isFairQueueEnabled();
         else
             return true;
     }
