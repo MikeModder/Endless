@@ -26,8 +26,9 @@ hs_err_pid*
 webhook.txt
 
 # Other things
-logs/*
-target/*
+logs/
+target/
 dependency-reduced-pom.xml
-.idea/*
+.idea/
 *.iml
+lang/
