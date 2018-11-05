@@ -115,7 +115,8 @@ public class ServerSettingsCmd extends EndlessCommand
                 .append(event.localize("command.settings.value.mutedR")).append((mutedRole==null?none:" **"+mutedRole.getAsMention()+"**"))
                 .append(event.localize("command.settings.value.bdd")).append((banDeleteDays==0?dontdel:" **"+banDeleteDays+"**"))
                 .append(event.localize("command.settings.value.room")).append(" **").append(roomMode.getName()).append("**")
-                .append(event.localize("command.settings.value.tz")).append(" **").append(tz.toString()).append("**");
+                .append(event.localize("command.settings.value.tz")).append(" **").append(tz.toString()).append("**")
+                .append(event.localize("command.settings.value.locale")).append(" **").append(settings.getLocale().getLocalizedName()).append("**");
 
         starboardString.append(event.localize("command.settings.value.starboard")).append((starboard==null?none:" **"+starboard.getAsMention()+"**"))
                 .append(event.localize("command.settings.value.starboard.count")).append((starboardCount==0?disabled:" **"+starboardCount+"**"))
