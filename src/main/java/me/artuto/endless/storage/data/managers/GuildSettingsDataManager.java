@@ -20,6 +20,7 @@ package me.artuto.endless.storage.data.managers;
 import ch.qos.logback.classic.Logger;
 import me.artuto.endless.Bot;
 import me.artuto.endless.Endless;
+import me.artuto.endless.Locale;
 import me.artuto.endless.core.entities.Ignore;
 import me.artuto.endless.core.entities.Room;
 import me.artuto.endless.core.entities.impl.EndlessCoreImpl;
@@ -1301,6 +1302,42 @@ public class GuildSettingsDataManager
         catch(SQLException e)
         {
             LOG.error("Error while setting the status of the repeat mode for the guild {}", guild.getId(), e);
+        }
+    }
+
+    public void setLocale(Guild guild, Locale locale)
+    {
+        try
+        {
+            PreparedStatement statement = connection.prepareStatement("SELECT guild_id, locale FROM GUILD_SETTINGS WHERE guild_id = ?",
+                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            statement.setLong(1, guild.getIdLong());
+            statement.closeOnCompletion();
+
+            try(ResultSet results = statement.executeQuery())
+            {
+                if(results.next())
+                {
+                    results.updateString("locale", locale.name());
+                    results.updateRow();
+                }
+                else
+                {
+                    results.moveToInsertRow();
+                    results.updateLong("guild_id", guild.getIdLong());
+                    results.updateString("locale", locale.name());
+                    results.insertRow();
+                }
+
+                GuildSettingsImpl settings = (GuildSettingsImpl)bot.endless.getGuildSettings(guild);
+                settings.setLocale(locale);
+                if(bot.endless.getGuildSettingsById(guild.getIdLong()).isDefault())
+                    ((EndlessCoreImpl)bot.endless).addSettings(guild, settings);
+            }
+        }
+        catch(SQLException e)
+        {
+            LOG.error("Error while setting the locale for the guild {}", guild.getId(), e);
         }
     }
 }

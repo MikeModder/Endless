@@ -60,7 +60,6 @@ import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -69,6 +68,7 @@ import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
@@ -82,6 +82,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.ResourceBundle;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -276,7 +277,7 @@ public class Bot extends ListenerAdapter
                 new RemoveCmd(this), new ResumeCmd(this), new RepeatCmd(this), new SkipCmd(this), new StopCmd(), new VolumeCmd(this),
 
                 // Server Settings
-                new IgnoreCmd(this), new LeaveMsgCmd(this), new PrefixCmd(this), new RoomCmd(this),
+                new IgnoreCmd(this), new LeaveMsgCmd(this), new LocaleCmd(this), new PrefixCmd(this), new RoomCmd(this),
                 new ServerSettingsCmd(this), new SetDJCmd(this), new SetMusicTcCmd(this), new SetMusicVcCmd(this), new SetupCmd(this),
                 new StarboardCmd(this), new WelcomeDmCmd(this), new WelcomeMsgCmd(this),
 
@@ -465,6 +466,13 @@ public class Bot extends ListenerAdapter
                 return !(gs==null) && !(gs.isDefault());
             }
             return false;
-        }).forEach(g -> g.leave().queue());
+        }).map(Guild::leave).forEach(RestAction::queue);
+    }
+
+    public void reloadLanguages()
+    {
+        ResourceBundle.clearCache(Locale.EN_US.getClassLoader());
+        for(Locale loc : Locale.values())
+            loc.reload();
     }
 }
