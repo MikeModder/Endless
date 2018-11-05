@@ -181,8 +181,8 @@ public class ClearCmd extends EndlessCommand
                 }
                 catch(Exception ignored) {}
 
-                if(msg.isPinned())
-                    deletion.remove(msg);
+                if(!(msg.isPinned()))
+                    deletion.add(msg);
             }
 
             if(deletion.isEmpty())
