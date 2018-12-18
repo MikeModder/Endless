@@ -437,7 +437,7 @@ public class Bot extends ListenerAdapter
                     +(shardInfo.getShardId()+1)));
     }
 
-    /**private void leavePointlessGuilds()
+    /*private void leavePointlessGuilds()
     {
         shardManager.getGuilds().stream().filter(g ->
         {
@@ -453,5 +453,5 @@ public class Bot extends ListenerAdapter
             }
             return false;
         }).forEach(g -> g.leave().queue());
-    }/*
+    }*/
 }
