@@ -60,9 +60,12 @@ public class MiscUtils
                     .header("user-agent", Const.USER_AGENT)
                     .build();
 
-        try(Response response = client.newCall(request).execute())
+        try
         {
-            return response.body().byteStream();
+            Response response = client.newCall(request).execute();
+            InputStream stream = response.body().byteStream();
+            response.close();
+            return stream;
         }
         catch(IOException e)
         {
