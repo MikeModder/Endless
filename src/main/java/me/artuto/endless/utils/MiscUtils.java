@@ -64,7 +64,7 @@ public class MiscUtils
         {
             Response response = client.newCall(request).execute();
             InputStream stream = response.body().byteStream();
-            response.close();
+            //response.close();
             return stream;
         }
         catch(IOException e)
