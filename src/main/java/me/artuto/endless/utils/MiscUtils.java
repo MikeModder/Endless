@@ -41,7 +41,7 @@ import java.util.List;
 
 public class MiscUtils
 {
-    private static OkHttpClient client = new OkHttpClient().Builder().build();
+    private static OkHttpClient client = new OkHttpClient.Builder().build();
 
     public static int isCase(Message m, int caseNum)
     {
