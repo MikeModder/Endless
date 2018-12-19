@@ -187,7 +187,10 @@ public class EmoteCmd extends EndlessCommand
 
             guild.getController().createEmote(name, icon).reason("["+event.getAuthor().getName()+"#"+
                     event.getAuthor().getDiscriminator()+"]").queue(em -> event.replySuccess(FormatUtil.sanitize("Successfully added emote *"+
-                    em.getName()+"* ("+em.getAsMention()+")")), e -> event.replyError("Something went wrong while creating a new emote!"));
+                    em.getName()+"* ("+em.getAsMention()+")")), e -> { 
+                    event.replyError("Something went wrong while creating a new emote!");
+                    Endless.LOG.error("Could not create emote", e);
+            });
         }
     }
 
@@ -258,7 +261,10 @@ public class EmoteCmd extends EndlessCommand
 
             guild.getController().createEmote(name, icon).reason("["+event.getAuthor().getName()+"#"+
                     event.getAuthor().getDiscriminator()+"]").queue(em -> event.replySuccess(FormatUtil.sanitize("Successfully added emote *"+
-                    em.getName()+"* ("+em.getAsMention()+")")), e -> event.replyError("Something went wrong while creating a new emote!"));
+                    em.getName()+"* ("+em.getAsMention()+")")), e -> { 
+                    event.replyError("Something went wrong while creating a new emote!");
+                    Endless.LOG.error("Could not create emote", e);
+            });
         }
     }
 
@@ -288,8 +294,10 @@ public class EmoteCmd extends EndlessCommand
             emote = event.getMessage().getEmotes().get(0);
 
             emote.delete().reason("["+event.getAuthor().getName()+"#"+event.getAuthor().getDiscriminator()+"]")
-                    .queue(em -> event.replySuccess(FormatUtil.sanitize("Successfully deleted emote *"+emote.getName()+"*")),
-                            e -> event.replyError("Something went wrong while deleting the emote!"));
+                    .queue(em -> event.replySuccess(FormatUtil.sanitize("Successfully deleted emote *"+emote.getName()+"*")), e -> { 
+                    event.replyError("Something went wrong while deleting the emote!");
+                    Endless.LOG.error("Could not delete emote", e);
+            });
         }
     }
 
