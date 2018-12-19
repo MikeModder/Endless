@@ -21,6 +21,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.vdurmont.emoji.EmojiParser;
 import me.artuto.endless.Const;
+import me.artuto.endless.Endless;
 import me.artuto.endless.commands.EndlessCommand;
 import me.artuto.endless.commands.cmddata.Categories;
 import me.artuto.endless.utils.ArgsUtils;
