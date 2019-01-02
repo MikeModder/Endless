@@ -10,6 +10,14 @@ Endless is license under GNU GPL 3.0 License, that means you can go here and loo
 
 Also, any changes made to any piece of code published here may be stated.
 
+## Donations
+
+Endless is developed in my free time, and I (obviously) dont get paid for making it. The support is also free; so if the bot has helped you, or has been useful for your server please consider [Donating](https://paypal.me/artuto).
+
+To get perks if you donated please join the support server below.
+
+If you can't donate money, you may want to consider joining my [Minecraft server](https://libertylandmc.tk). You can find cool people there!
+
 ## Editing the source code
 
 I won't provide support when editing the source code to create a custom build of Endless (unless its going to be a [pull request](https://github.com/EndlessBot/Endless/pulls)).
