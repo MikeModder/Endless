@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +41,8 @@ import java.util.List;
 
 public class MiscUtils
 {
+    private static OkHttpClient client = new OkHttpClient.Builder().build();
+
     public static int isCase(Message m, int caseNum)
     {
         if(!(m.getAuthor().getIdLong()==m.getJDA().getSelfUser().getIdLong()))
@@ -52,15 +55,17 @@ public class MiscUtils
 
     public static InputStream getInputStream(String url)
     {
-        try
-        {
-            OkHttpClient client = new OkHttpClient.Builder().build();
-            Request request = new Request.Builder().url(url)
+         Request request = new Request.Builder().url(url)
                     .method("GET", null)
                     .header("user-agent", Const.USER_AGENT)
                     .build();
 
-            return client.newCall(request).execute().body().byteStream();
+        try
+        {
+            Response response = client.newCall(request).execute();
+            InputStream stream = response.body().byteStream();
+            //response.close();
+            return stream;
         }
         catch(IOException e)
         {

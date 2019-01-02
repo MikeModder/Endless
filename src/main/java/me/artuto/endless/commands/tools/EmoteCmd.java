@@ -19,6 +19,7 @@ package me.artuto.endless.commands.tools;
 
 import com.vdurmont.emoji.EmojiParser;
 import me.artuto.endless.Const;
+import me.artuto.endless.Endless;
 import me.artuto.endless.commands.EndlessCommand;
 import me.artuto.endless.commands.EndlessCommandEvent;
 import me.artuto.endless.commands.cmddata.Categories;
@@ -188,7 +189,10 @@ public class EmoteCmd extends EndlessCommand
 
             guild.getController().createEmote(name, icon).reason("["+event.getAuthor().getName()+"#"+
                     event.getAuthor().getDiscriminator()+"]").queue(em -> event.replySuccess("command.emote.create.success",
-                    em.getName(), em.getAsMention()), e -> event.replyError("command.emote.create.error"));
+                    em.getName(), em.getAsMention()), e -> {
+                        event.replyError("command.emote.create.error");
+                        Endless.LOG.error("Could not create emote", e);
+            });
         }
     }
 
@@ -255,7 +259,10 @@ public class EmoteCmd extends EndlessCommand
 
             guild.getController().createEmote(name, icon).reason("["+event.getAuthor().getName()+"#"+
                     event.getAuthor().getDiscriminator()+"]").queue(em -> event.replySuccess("command.emote.create.success",
-                    em.getName(), em.getAsMention()), e -> event.replyError("Scommand.emote.create.error"));
+                    em.getName(), em.getAsMention()), e -> {
+                        event.replyError("command.emote.create.error");
+                        Endless.LOG.error("Could not create emote", e);
+            });
         }
     }
 
@@ -285,8 +292,10 @@ public class EmoteCmd extends EndlessCommand
             emote = event.getMessage().getEmotes().get(0);
 
             emote.delete().reason("["+event.getAuthor().getName()+"#"+event.getAuthor().getDiscriminator()+"]")
-                    .queue(s -> event.replySuccess("command.emote.delete.success", emote.getName()),
-                            e -> event.replyError("command.emote.delete.error"));
+                    .queue(s -> event.replySuccess("command.emote.delete.success", emote.getName()), e -> {
+                                event.replyError("command.emote.delete.error");
+                                Endless.LOG.error("Could not delete emote", e);
+            });
         }
     }
 }

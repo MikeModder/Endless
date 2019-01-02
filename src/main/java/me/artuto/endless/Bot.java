@@ -348,7 +348,7 @@ public class Bot extends ListenerAdapter
                     reminderScheduler.scheduleWithFixedDelay(() -> rdm.updateReminders(shardManager), 0, 1, TimeUnit.SECONDS);
                 }
                 endlessPool.schedule(() -> db.toDelete.forEach(g -> db.deleteSettings(g)), 24, TimeUnit.HOURS);
-                endlessPool.scheduleWithFixedDelay(this::leavePointlessGuilds, 5, 30, TimeUnit.MINUTES);
+                // endlessPool.scheduleWithFixedDelay(this::leavePointlessGuilds, 5, 30, TimeUnit.MINUTES);
                 optimizerScheduler.scheduleWithFixedDelay(System::gc, 5, 30, TimeUnit.MINUTES);
                 sendStats(event.getJDA());
             }
@@ -449,24 +449,6 @@ public class Bot extends ListenerAdapter
         else
             presence.setPresence(OnlineStatus.DO_NOT_DISTURB, Game.playing("Maintenance mode enabled | Shard "
                     +(shardInfo.getShardId()+1)));
-    }
-
-    private void leavePointlessGuilds()
-    {
-        shardManager.getGuilds().stream().filter(g ->
-        {
-            if(!(g.isAvailable()))
-                return false;
-            if(g.getOwnerIdLong()==config.getOwnerId() || Arrays.asList(config.getCoOwnerIds()).contains(g.getOwnerIdLong()))
-                return false;
-            long botcount = g.getMembers().stream().filter(m -> m.getUser().isBot()).count();
-            if(g.getMembers().size()-botcount<10 || (botcount>20 && ((double)botcount/g.getMemberCache().size())>0.65))
-            {
-                GuildSettings gs = endless.getGuildSettings(g);
-                return !(gs==null) && !(gs.isDefault());
-            }
-            return false;
-        }).map(Guild::leave).forEach(RestAction::queue);
     }
 
     public void reloadLanguages()
