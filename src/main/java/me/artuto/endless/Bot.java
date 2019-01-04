@@ -262,7 +262,8 @@ public class Bot extends ListenerAdapter
 
                 // Bot Administration
                 new BashCmd(), new BlacklistGuildCmd(this), new BlacklistUserCmd(this),
-                new BotCPanelCmd(), new EvalCmd(this), new RestartShardCmd(), new ShutdownCmd(this), new StatusCmd(),
+                new BotCPanelCmd(), new EvalCmd(this), new ReloadCmd(this), new RestartShardCmd(),
+                new ShutdownCmd(this), new StatusCmd(),
 
                 // Fun
                 new CatCmd(this), new ChooseCmd(), new DogCmd(),
