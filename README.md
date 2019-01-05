@@ -29,3 +29,9 @@ To get support about the bot please join my support guild using the following li
 [![Discord](https://canary.discordapp.com/api/guilds/312776731704426496/widget.png?style=banner2)](https://discord.gg/CXKfYW3)
 
 Or DM me on Discord (```Artuto#0424 | 264499432538505217```)
+
+## Special Thanks
+
+A special shout to the [JetBrains](https://jetbrains.com/?from=EndlessBot) guys for giving this project an Open Source License for their products, like IntelliJ IDEA!
+
+
