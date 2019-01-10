@@ -102,7 +102,7 @@ public class ResultHandler implements AudioLoadResultHandler
     private void loadSingle(AudioTrack track, AudioPlaylist playlist)
     {
         int pos = bot.musicTasks.putInQueue(track, event)+2;
-        String added = event.localize("core.music.added", track.getInfo().title, track.getDuration());
+        String added = event.localize("core.music.added", track.getInfo().title, FormatUtil.formatTime(track.getDuration()));
         String position = pos==1?event.localize("core.music.added.playing"):event.localize("core.music.added.queued", pos);
         String addMsg = FormatUtil.sanitize(event.getClient().getSuccess()+" "+added+" "+position);
 

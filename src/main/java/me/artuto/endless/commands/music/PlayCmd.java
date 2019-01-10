@@ -51,7 +51,7 @@ public class PlayCmd extends MusicCommand
         String args = (event.getArgs().startsWith("<") && event.getArgs().endsWith(">"))?
                 event.getArgs().substring(1, event.getArgs().length()-1):(event.getArgs().isEmpty()?
                 event.getMessage().getAttachments().get(0).getUrl():event.getArgs());
-        event.reply(Const.LOADING+" "+event.localize("misc.loading")+" `["+args+"]`", msg -> bot.audioManager.loadItemOrdered(event.getGuild(), args,
-                new ResultHandler(bot, false, event, msg)));
+        event.reply(Const.LOADING+" "+event.localize("misc.loading")+" `["+args+"]`",
+                msg -> bot.audioManager.loadItemOrdered(event.getGuild(), args, new ResultHandler(bot, false, event, msg)));
     }
 }

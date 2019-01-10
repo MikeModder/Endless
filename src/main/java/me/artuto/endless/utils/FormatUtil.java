@@ -25,9 +25,11 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -124,6 +126,15 @@ public class FormatUtil
         long minutes = seconds/60;
         seconds %= 60;
         return (hours>0 ? hours+":" : "") + (minutes<10 ? "0"+minutes : minutes) + ":" + (seconds<10 ? "0"+seconds : seconds);
+    }
+
+    public static long formatTime(String duration)
+    {
+        LocalTime lt;
+        try {lt = LocalTime.parse(duration, DateTimeFormatter.ISO_LOCAL_TIME);}
+        catch(DateTimeParseException ignored) {return -1;}
+
+        return Math.round(lt.toSecondOfDay()*1000);
     }
 
     public static String formatLogClean(String message, OffsetDateTime now, ZoneId tz, int caseId, String emote, String aN,
