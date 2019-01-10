@@ -143,7 +143,7 @@ public class Bot extends ListenerAdapter
     // Pools
     public ScheduledThreadPoolExecutor endlessPool;
 
-    // Schedulers;
+    // Schedulers
     public ScheduledExecutorService voiceLeaverScheduler;
     private ScheduledExecutorService muteScheduler;
     private ScheduledExecutorService optimizerScheduler;
@@ -204,6 +204,7 @@ public class Bot extends ListenerAdapter
             sdm = new StarboardDataManager(this);
             tdm = new TagDataManager(this);
         }
+
         BlacklistHandler bHandler = new BlacklistHandler(this);
         IgnoreHandler iHandler = new IgnoreHandler(this);
         SpecialCaseHandler sHandler = new SpecialCaseHandler();
@@ -223,6 +224,7 @@ public class Bot extends ListenerAdapter
             reminderScheduler = ThreadLoader.createThread("Reminders");
             starboardThread = ThreadLoader.createThread("Starboard");
         }
+
         archiveThread = ThreadLoader.createThread("Archive Command");
         clearThread = ThreadLoader.createThread("Clear Command");
         endlessPool = ThreadLoader.createThread("Endless");
@@ -348,8 +350,8 @@ public class Bot extends ListenerAdapter
                     pollScheduler.scheduleWithFixedDelay(() -> pldm.updatePolls(shardManager), 0, 1, TimeUnit.SECONDS);
                     reminderScheduler.scheduleWithFixedDelay(() -> rdm.updateReminders(shardManager), 0, 1, TimeUnit.SECONDS);
                 }
+
                 endlessPool.schedule(() -> db.toDelete.forEach(g -> db.deleteSettings(g)), 24, TimeUnit.HOURS);
-                // endlessPool.scheduleWithFixedDelay(this::leavePointlessGuilds, 5, 30, TimeUnit.MINUTES);
                 optimizerScheduler.scheduleWithFixedDelay(System::gc, 5, 30, TimeUnit.MINUTES);
                 sendStats(event.getJDA());
             }

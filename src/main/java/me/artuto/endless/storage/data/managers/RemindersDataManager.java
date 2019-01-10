@@ -33,8 +33,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -53,7 +53,7 @@ public class RemindersDataManager
         this.connection = bot.db.getConnection();
     }
 
-    public void createReminder(long channelId, long expiryTime, long userId, String msg)
+    public void createReminder(long channelId, long expiryTime, long startTime, long userId, String msg)
     {
         try
         {
@@ -67,6 +67,7 @@ public class RemindersDataManager
                 results.updateLong("user_id", userId);
                 results.updateLong("channel_id", channelId);
                 results.updateLong("expiry_time", expiryTime);
+                results.updateLong("start_time", startTime);
                 results.updateString("msg", msg);
                 results.insertRow();
             }
@@ -111,7 +112,7 @@ public class RemindersDataManager
 
             try(ResultSet results = statement.executeQuery())
             {
-                list = new LinkedList<>();
+                list = new ArrayList<>();
                 while(results.next())
                     list.add(bot.endlessBuilder.entityBuilder.createReminder(results));
                 return list;
@@ -127,7 +128,7 @@ public class RemindersDataManager
     public void updateReminders(ShardManager shardManager)
     {
         OffsetDateTime now = OffsetDateTime.now();
-        List<Reminder> expired = new LinkedList<>();
+        List<Reminder> expired = new ArrayList<>();
         List<Reminder> reminders = getReminders();
 
         // Check for expired
@@ -144,12 +145,14 @@ public class RemindersDataManager
             User user = shardManager.getUserById(reminder.getUserId());
             if(user==null)
                 return;
+
             MessageChannel channel = shardManager.getTextChannelById(reminder.getChannelId());
             if(channel==null)
                 channel = user.openPrivateChannel().complete();
+
             String toSend;
-            long until = ChronoUnit.SECONDS.between(now,  reminder.getExpiryTime());
-            String formattedTime = FormatUtil.formatTimeFromSeconds(until);
+            String formattedTime = FormatUtil.formatTimeFromSeconds(now.until(reminder.getStartTime(), ChronoUnit.SECONDS));
+
             if(channel instanceof PrivateChannel)
                 toSend = ":alarm_clock: "+reminder.getMessage()+" ~set "+formattedTime+" ago";
             else
@@ -170,7 +173,7 @@ public class RemindersDataManager
 
             try(ResultSet results = statement.executeQuery())
             {
-                list = new LinkedList<>();
+                list = new ArrayList<>();
                 while(results.next())
                     list.add(bot.endlessBuilder.entityBuilder.createReminder(results));
                 return list;

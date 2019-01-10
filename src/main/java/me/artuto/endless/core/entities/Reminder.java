@@ -33,5 +33,7 @@ public interface Reminder
 
     OffsetDateTime getExpiryTime();
 
+    OffsetDateTime getStartTime();
+
     String getMessage();
 }

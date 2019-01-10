@@ -28,15 +28,16 @@ import java.time.OffsetDateTime;
 public class ReminderImpl implements Reminder
 {
     private final long id, channelId, userId;
-    private final OffsetDateTime expiryTime;
+    private final OffsetDateTime expiryTime, startTime;
     private final String message;
 
-    public ReminderImpl(long id, long channelId, long userId, OffsetDateTime expiryTime, String message)
+    public ReminderImpl(long id, long channelId, long userId, OffsetDateTime expiryTime, OffsetDateTime startTime, String message)
     {
         this.id = id;
         this.channelId = channelId;
         this.userId = userId;
         this.expiryTime = expiryTime;
+        this.startTime = startTime;
         this.message = message;
     }
 
@@ -62,6 +63,12 @@ public class ReminderImpl implements Reminder
     public OffsetDateTime getExpiryTime()
     {
         return expiryTime;
+    }
+
+    @Override
+    public OffsetDateTime getStartTime()
+    {
+        return startTime;
     }
 
     @Override

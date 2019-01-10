@@ -236,10 +236,15 @@ public class EntityBuilder
     {
         Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         gmt.setTimeInMillis(results.getLong("expiry_time"));
+        OffsetDateTime expiry = OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId());
+        gmt.setTimeInMillis(results.getLong("start_time"));
+        OffsetDateTime start = OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId());
+
         return new ReminderImpl(results.getLong("id"),
                 results.getLong("channel_id"),
                 results.getLong("user_id"),
-                OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId()),
+                expiry,
+                start,
                 results.getString("msg"));
     }
 
