@@ -134,7 +134,8 @@ public class ReminderCmd extends EndlessCommand
             OffsetDateTime now = OffsetDateTime.now();
             OffsetDateTime expiry = now.plusSeconds(time);
             String formattedTime = FormatUtil.formatTimeFromSeconds(time);
-            bot.rdm.createReminder(event.getChannel().getIdLong(), expiry.toInstant().toEpochMilli(), event.getAuthor().getIdLong(), message);
+            bot.rdm.createReminder(event.getChannel().getIdLong(), expiry.toInstant().toEpochMilli(),
+                    now.toInstant().toEpochMilli(), event.getAuthor().getIdLong(), message);
             event.replySuccess("command.reminder.create.created", formattedTime);
         }
     }

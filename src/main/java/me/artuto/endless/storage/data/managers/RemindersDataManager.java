@@ -151,7 +151,7 @@ public class RemindersDataManager
                 channel = user.openPrivateChannel().complete();
 
             String toSend;
-            String formattedTime = FormatUtil.formatTimeFromSeconds(now.until(reminder.getStartTime(), ChronoUnit.SECONDS));
+            String formattedTime = FormatUtil.formatTimeFromSeconds(reminder.getStartTime().until(now, ChronoUnit.SECONDS));
 
             if(channel instanceof PrivateChannel)
                 toSend = ":alarm_clock: "+reminder.getMessage()+" ~set "+formattedTime+" ago";
