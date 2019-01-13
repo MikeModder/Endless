@@ -1,4 +1,5 @@
 [![Support](https://img.shields.io/discord/312776731704426496.svg)](https://discord.gg/CXKfYW3)
+[![Issues](https://img.shields.io/github/issues-raw/EndlessBot/Endless.svg)](https://github.com/EndlessBot/Endless/issues)
 
 # Endless
 
@@ -12,11 +13,11 @@ Also, any changes made to any piece of code published here may be stated.
 
 ## Donations
 
-Endless is developed in my free time, and I (obviously) dont get paid for making it. The support is also free; so if the bot has helped you, or has been useful for your server please consider [Donating](https://paypal.me/artuto).
+Endless is developed in my free time, and I (obviously) dont get paid for making it. The support is also free; so if the bot has helped you, or has been useful for your server please consider [Donating](https://donatebot.io/checkout/312776731704426496).
 
 To get perks if you donated please join the support server below.
 
-If you can't donate money, you may want to consider joining my [Minecraft server](https://libertylandmc.tk). You can find cool people there!
+If you can't donate money, you may want to consider joining my [Minecraft server](https://libertyland.xyz). You can find cool people there!
 
 ## Editing the source code
 
