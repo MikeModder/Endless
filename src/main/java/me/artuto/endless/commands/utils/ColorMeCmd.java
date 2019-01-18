@@ -234,6 +234,9 @@ public class ColorMeCmd extends EndlessCommand
 
     private Color getColor(String hex)
     {
+        if(hex.contains("ffffff"))
+           hex = "#010101";
+
         try
         {
             return Color.decode(hex);
