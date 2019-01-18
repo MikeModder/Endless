@@ -234,7 +234,7 @@ public class ColorMeCmd extends EndlessCommand
 
     private Color getColor(String hex)
     {
-        if(hex.contains("ffffff"))
+        if(hex.contains("000000"))
            hex = "#010101";
 
         try
