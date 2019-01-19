@@ -346,7 +346,7 @@ public class Bot extends ListenerAdapter
                     reminderScheduler.scheduleWithFixedDelay(() -> rdm.updateReminders(shardManager), 0, 1, TimeUnit.SECONDS);
                     roomScheduler.scheduleWithFixedDelay(() -> rsdm.updateRooms(shardManager), 0, 1, TimeUnit.SECONDS);
                 }
-                endlessPool.schedule(() -> db.toDelete.forEach(g -> db.deleteSettings(g)), 24, TimeUnit.HOURS);
+                // endlessPool.schedule(() -> db.toDelete.forEach(g -> db.deleteSettings(g)), 24, TimeUnit.HOURS);
                 // endlessPool.scheduleWithFixedDelay(this::leavePointlessGuilds, 5, 30, TimeUnit.MINUTES);
                 optimizerScheduler.scheduleWithFixedDelay(System::gc, 5, 30, TimeUnit.MINUTES);
                 sendStats(event.getJDA());
