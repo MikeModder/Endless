@@ -245,7 +245,7 @@ public class Listener implements CommandListener, EventListener
                 return;
             GuildVoiceJoinEvent event = (GuildVoiceJoinEvent)preEvent;
             serverlog.onGuildVoiceJoin(event);
-            // checkVoiceJoin(event);
+            checkVoiceJoin(event);
         }
         else if(preEvent instanceof GuildVoiceMoveEvent)
         {
@@ -260,7 +260,7 @@ public class Listener implements CommandListener, EventListener
                 return;
             GuildVoiceLeaveEvent event = (GuildVoiceLeaveEvent)preEvent;
             serverlog.onGuildVoiceLeave(event);
-            // checkVoiceLeave(event);
+            checkVoiceLeave(event);
         }
         else if(preEvent instanceof GuildBanEvent)
         {
