@@ -32,7 +32,6 @@ public class RepeatCmd extends MusicCommand
         this.name = "repeat";
         this.help = "Toggles the repeat mode in this Guild";
         this.aliases = new String[]{"repeatmode"};
-        this.category = MusicCommand.DJ;
         this.needsArguments = false;
     }
 
