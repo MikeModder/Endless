@@ -50,7 +50,7 @@ public class Categories
     public static final Category SERVER_CONFIG = new Category("Guild Settings", event -> {
         if(!(Bot.getInstance().dataEnabled))
         {
-            event.replyError("Endless is running on No-data mode.");
+            event.replyError("Endless is running in no-data mode.");
             return false;
         }
 

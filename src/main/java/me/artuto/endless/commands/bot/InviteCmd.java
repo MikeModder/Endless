@@ -41,7 +41,7 @@ public class InviteCmd extends EndlessCommand
     @Override
     protected void executeCommand(CommandEvent event)
     {
-        String message = "Hi! I'm **Endless**, if you want to add me to your guild use this link:\n" +
+        String message = "Hi! I'm **Endless**, if you want to add me to your guild, use this link:\n" +
                 ":link: **<%s>**\n" +
                 "You can also join the support server:\n" +
                 ":inbox_tray: **<%s>**";

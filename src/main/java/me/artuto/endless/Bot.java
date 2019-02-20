@@ -166,9 +166,9 @@ public class Bot extends ListenerAdapter
         this.maintenance = maintenance;
         Endless.LOG.info("Starting Endless "+Const.VERSION+"...");
         if(!(dataEnabled))
-            Endless.LOG.warn("WARNING - Starting on No-data Mode - WARNING");
+            Endless.LOG.warn("!!WARNING - Starting in no-data mode - WARNING!!");
         if(maintenance)
-            Endless.LOG.warn("WARNING - Starting on Maintenance Mode - WARNING");
+            Endless.LOG.warn("!!WARNING - Starting in maintenance mode - WARNING!!");
 
         CONFIGLOG.info("Loading config file...");
 
@@ -261,7 +261,7 @@ public class Bot extends ListenerAdapter
                 new BotCPanelCmd(), new EvalCmd(this), new RestartShardCmd(), new ShutdownCmd(this), new StatusCmd(),
 
                 // Fun
-                new CatCmd(this), new ChooseCmd(), new DogCmd(this),
+                /*new CatCmd(this),*/ new ChooseCmd(), new DogCmd(this),
                 new GiphyGifCmd(this), new ProfileCmd(this), new SayCmd(), new TagCmd(this),
 
                 // Moderation

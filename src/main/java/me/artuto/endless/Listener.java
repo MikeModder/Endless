@@ -354,6 +354,7 @@ public class Listener implements CommandListener, EventListener
         if(event.isOwner())
             return;
 
+        //TODO: get rid of this logging bit
         if(guild==null)
         {
             String toSend = FormatUtil.sanitize("`"+LogUtils.getTimeAndDate()+"` :keyboard: **"+author.getName()+"#"+author.getDiscriminator()+"** " +
@@ -400,8 +401,7 @@ public class Listener implements CommandListener, EventListener
                 "If you need help with the bot please join the support guild `e!help support`\n" +
                 "Please report all the bugs you find. If you have a feature request is welcome as well :)\n\n" +
                 Const.ENDLESS+" Join the support server: **<"+Const.INVITE+">**\n" +
-                Const.GITHUB+" Endless GitHub: **<https://github.com/EndlessBot/Endless>**\n" +
-                Const.LINE_START+" Contribute to Endless development **<https://paypal.me/artuto>**";
+                Const.GITHUB+" Endless GitHub: **<https://github.com/MikeModder/Endless>**";
 
         Sender.sendMessage(defaultTc, toSend);
     }

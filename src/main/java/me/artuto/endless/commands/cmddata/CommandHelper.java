@@ -130,7 +130,7 @@ public class CommandHelper
 
         if(!(eBuilder.isEmpty()))
             event.replyInDm(new MessageBuilder(Const.ENDLESS+" Endless Help:").setEmbed(eBuilder.build()).build(), s -> event.reactSuccess(),
-                    e -> event.replyWarning("Help cannot be sent because you are blocking Drect Messages."));
+                    e -> event.replyWarning("Help cannot be sent because you are blocking Direct Messages."));
         else
             event.replyWarning("Commands not available for this category! (Missing permissions?)");
     }
@@ -187,7 +187,7 @@ public class CommandHelper
         }
 
         event.replyInDm(sb.toString(), s -> event.reactSuccess(),
-                e -> event.replyWarning("Help cannot be sent because you are blocking Drect Messages."));
+                e -> event.replyWarning("Help cannot be sent because you are blocking Direct Messages."));
     }
 
     private static void getHelpCategoryEmbed(Command.Category cat, CommandEvent event, EmbedBuilder eBuilder)
@@ -224,8 +224,7 @@ public class CommandHelper
         eBuilder.setDescription(Const.INFO+" Need support? Join the official server, where you can get, support (woah), " +
                 "announcements about the bot, updates of the bot, request features or report bugs.\n\n" +
                 ":interrobang: **Invite:** [Support Server]("+Const.INVITE+")\n" +
-                Const.GITHUB+" **GitHub:** [GitHub Repository](https://github.com/EndlessBot/Endless)\n" +
-                ":link: **Bot Invite:** [Bot Invite]("+event.getJDA().asBot().getInviteUrl(Permission.ADMINISTRATOR)+")\n" +
-                ":moneybag: **Donate:** [Support Endless Development](https://paypal.me/artuto)");
+                Const.GITHUB+" **GitHub:** [GitHub Repository](https://github.com/MikeModder/Endless)\n" +
+                ":link: **Bot Invite:** [Bot Invite]("+event.getJDA().asBot().getInviteUrl(Permission.ADMINISTRATOR)+")");
     }
 }

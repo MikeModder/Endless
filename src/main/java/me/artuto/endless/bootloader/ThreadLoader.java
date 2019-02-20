@@ -35,7 +35,7 @@ public class ThreadLoader
         }
         catch(Exception e)
         {
-            throw new RuntimeException("Error when creating the "+name+" thread!");
+            throw new RuntimeException("Error creating the '"+name+"' thread!");
         }
     }
 }
