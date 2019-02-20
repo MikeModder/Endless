@@ -11,28 +11,12 @@ Endless is license under GNU GPL 3.0 License, that means you can go here and loo
 
 Also, any changes made to any piece of code published here may be stated.
 
-## Donations
+## Changes
 
-Endless is developed in my free time, and I (obviously) dont get paid for making it. The support is also free; so if the bot has helped you, or has been useful for your server please consider [Donating](https://donatebot.io/checkout/312776731704426496).
-
-To get perks if you donated please join the support server below.
-
-If you can't donate money, you may want to consider joining my [Minecraft server](https://libertyland.xyz). You can find cool people there!
-
-## Editing the source code
-
-I won't provide support when editing the source code to create a custom build of Endless (unless its going to be a [pull request](https://github.com/EndlessBot/Endless/pulls)).
-
-## Support
-
-To get support about the bot please join my support guild using the following link:
-
-[![Discord](https://canary.discordapp.com/api/guilds/312776731704426496/widget.png?style=banner2)](https://discord.gg/CXKfYW3)
-
-Or DM me on Discord (```Artuto#0424 | 264499432538505217```)
+All I did was comment out some garbage in a file lol
 
 ## Special Thanks
 
-A special shout to the [JetBrains](https://jetbrains.com/?from=EndlessBot) guys for giving this project an Open Source License for their products, like IntelliJ IDEA!
-
+[GitHub user Caution3](https://github.com/Caution3) for their initial de-Artuto'd fork [which can be seen here](https://github.com/Caution3/Endless).
+Artuto for re-OSS'ing this so we can have an up-to-date fork
 
