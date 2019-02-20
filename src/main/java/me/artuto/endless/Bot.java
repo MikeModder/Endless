@@ -254,7 +254,7 @@ public class Bot extends ListenerAdapter
                 .setGuildSettingsManager(new ClientGSDM(this))
                 .addCommands(
                 // Bot
-                new AboutCmd(this), new DonateCmd(this), new InviteCmd(), new PingCmd(), new StatsCmd(),
+                new AboutCmd(this), /*new DonateCmd(this)*/, new InviteCmd(), new PingCmd(), new StatsCmd(),
 
                 // Bot Administration
                 new BashCmd(), new BlacklistGuildCmd(this), new BlacklistUserCmd(this),
