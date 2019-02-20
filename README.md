@@ -1,5 +1,4 @@
-[![Support](https://img.shields.io/discord/312776731704426496.svg)](https://discord.gg/CXKfYW3)
-[![Issues](https://img.shields.io/github/issues-raw/EndlessBot/Endless.svg)](https://github.com/EndlessBot/Endless/issues)
+[![Issues](https://img.shields.io/github/issues-raw/MikeModder/Endless.svg)](https://github.com/EndlessBot/Endless/issues)
 
 # Endless
 
@@ -18,5 +17,5 @@ All I did was comment out some garbage in a file lol
 ## Special Thanks
 
 [GitHub user Caution3](https://github.com/Caution3) for their initial de-Artuto'd fork [which can be seen here](https://github.com/Caution3/Endless).
-Artuto for re-OSS'ing this so we can have an up-to-date fork
 
+Artuto for re-OSS'ing this so we can have an up-to-date fork.
