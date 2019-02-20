@@ -31,3 +31,6 @@ target/*
 dependency-reduced-pom.xml
 .idea/*
 *.iml
+
+# Allow travis-ci file
+!.travis.yml
