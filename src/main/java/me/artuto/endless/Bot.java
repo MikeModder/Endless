@@ -27,7 +27,6 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import io.sentry.Sentry;
-import me.artuto.endless.bootloader.StartupChecker;
 import me.artuto.endless.bootloader.ThreadLoader;
 import me.artuto.endless.commands.bot.*;
 import me.artuto.endless.commands.botadm.*;
@@ -176,7 +175,6 @@ public class Bot extends ListenerAdapter
         try
         {
             config = new Config();
-            StartupChecker.checkConfig(config);
             CONFIGLOG.info("Successfully loaded config file!");
         }
         catch(Exception e)
