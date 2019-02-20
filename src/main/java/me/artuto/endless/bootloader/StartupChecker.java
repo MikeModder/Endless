@@ -41,6 +41,7 @@ public class StartupChecker
 
     private static boolean isConfigValid(Config config)
     {
+/*
         long owner = config.getOwnerId();
         long rootGuild = config.getRootGuildId();
 
@@ -49,6 +50,7 @@ public class StartupChecker
 
         if(!(rootGuild==Const.MAIN_GUILD || rootGuild==Const.GUILD_TESTING))
             throw new GuildException();
+*/
 
         return true;
     }
