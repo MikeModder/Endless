@@ -1,3 +1,4 @@
 language: java
 jdk: openjdk11
+install: mvn dependency:purge-local-repository
 script: mvn package
